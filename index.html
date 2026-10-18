@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="只关注真正影响工作流的 OpenAI 与 Codex 更新。可靠来源，清晰解释，下一步行动。">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="color-scheme" content="light dark">
+  <title>Agent Intelligence Hub</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body class="public-app light">
+  <a class="skip-link" href="#main">跳到正文</a>
+  <div class="shell">
+    <button id="nav-backdrop" class="nav-backdrop" aria-label="关闭导航遮罩" hidden></button>
+    <aside class="sidebar" id="sidebar" aria-label="主导航">
+      <a class="brand" href="#/"><span class="brand-mark" aria-hidden="true">∿</span><span><strong>Agent Intelligence</strong><small>让更新，成为判断。</small></span></a>
+      <div class="nav-label">工作台</div><nav id="navigation"></nav>
+      <div class="side-footer"><div class="local-pill"><span class="dot ok"></span>公开静态版</div><p class="subdued">真实来源 · 定期快照<br>收藏仅保留在此浏览器</p><button class="button mobile-menu" id="close-navigation">关闭导航</button></div>
+    </aside>
+    <div class="main">
+      <header class="topbar">
+        <button class="icon-button mobile-menu" aria-label="打开导航" aria-controls="sidebar" id="open-navigation">☰</button>
+        <a class="breadcrumb" href="#/">工作台<span id="breadcrumb-current">情报总览</span></a>
+        <form class="searchbox" id="search-form" role="search"><span aria-hidden="true">⌕</span><input id="global-search" aria-label="全局搜索" placeholder="搜索更新与关键词" maxlength="200"><kbd>⌘ K</kbd><button class="search-submit" type="submit">搜索</button></form>
+        <button class="icon-button" id="theme-button" aria-label="切换主题">◐</button>
+      </header>
+      <main class="content" id="main" tabindex="-1"><div class="skeleton" role="status" aria-label="正在读取公开快照"></div></main>
+    </div>
+  </div>
+  <noscript><p>请启用 JavaScript 读取公开快照，或直接访问 OpenAI 官方发布说明。</p></noscript>
+  <div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>
