@@ -1,0 +1,47 @@
+const origin='https://willreset.com';
+const stamp=value=>typeof value==='string'&&Number.isFinite(Date.parse(value))&&Date.parse(value)<=Date.now()+300000;
+const safeLink=value=>{if(typeof value!=='string'||!value.trim()||value.length>2000)return null;try{const u=new URL(value,origin);return u.protocol==='https:'&&!u.username&&!u.password&&!u.port&&['willreset.com','x.com','twitter.com','openai.com','status.openai.com','learn.chatgpt.com'].includes(u.hostname)?u.href:null;}catch{return null;}};
+const text=(value,max=400)=>typeof value==='string'?value.slice(0,max):'';
+async function json(url,maximum=1048576){const response=await fetch(url,{cache:'no-store',credentials:'omit',redirect:'error',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(12000)});if(!response.ok)throw Error('来源暂不可读');const reader=response.body.getReader();let size=0,raw='';const decoder=new TextDecoder();try{while(true){const part=await reader.read();if(part.done)break;size+=part.value.byteLength;if(size>maximum){await reader.cancel();throw Error('响应超限');}raw+=decoder.decode(part.value,{stream:true});}return JSON.parse(raw+decoder.decode());}finally{reader.releaseLock();}}
+export function parseForecast(value){
+ if(!value||!stamp(value.computed_at)||typeof value.model_version!=='string'||value.model_version.length>120)throw Error('预测格式异常');
+ const probability=v=>{if(v==null)return null;if(typeof v!=='number'||!Number.isFinite(v)||v<0||v>100)throw Error('预测数值异常');return v;};
+ if(value.last_reset_at!=null&&!stamp(value.last_reset_at))throw Error('重置时间异常');
+ return {at:value.computed_at,version:value.model_version,p24:probability(value.prob_24),p48:probability(value.prob_48),lastAt:value.last_reset_at??null,lastUrl:safeLink(value.last_reset_url),lastText:text(value.last_reset_text),promise:value.promise?.active===true?{quote:text(value.promise.quote),url:safeLink(value.promise.url),at:stamp(value.promise.at)?value.promise.at:null}:null};
+}
+export function parseTimeline(value){if(!value||!Array.isArray(value.events)||value.events.length>200)throw Error('历史格式异常');return value.events.flatMap(e=>{
+ if(!e||!stamp(e.announced_at)||typeof e.id!=='string'||e.id.length>200)return [];
+ if(e.preview!=null&&typeof e.preview!=='boolean')return [];
+ const kind=e.scope!=='global'?'other':e.kind==='banked'||e.reset_kind==='banked'?'banked':e.preview===true||e.kind==='reset_preview'?'promise':e.kind==='reset'?'global':'other';
+ if(kind==='other')return [];return [{id:e.id,kind,at:e.announced_at,title:text(e.summary||e.body,220),url:safeLink(e.source_url)}];
+}).sort((a,b)=>Date.parse(b.at)-Date.parse(a.at)).slice(0,30);}
+export function latestPublicReset(p,events){
+ const globals=events.filter(e=>e.kind==='global'),event=globals[0],id=p?.lastUrl?.match(/\/status\/(\d+)/)?.[1],matching=id?events.find(e=>e.id===id):null;
+ const conflict=matching&&matching.kind==='global'&&p?.lastAt&&Math.abs(Date.parse(p.lastAt)-Date.parse(matching.at))>86400000;
+ if(event&&(!p?.lastAt||conflict||matching&&matching.kind!=='global'||Date.parse(event.at)>Date.parse(p.lastAt)))return {at:event.at,title:event.title,url:event.url,label:'记录发布时间',note:conflict?'源站摘要与时间线日期不一致，采用记录发布时间；实际完成时刻未提供。':'第三方记录的发布时间，不代表账户实际完成重置的时刻。'};
+ return p?.lastAt&&(!matching||matching.kind==='global')?{at:p.lastAt,title:p.lastText,url:p.lastUrl,label:'源站报告的重置时间',note:''}:null;
+}
+export function createPublicData(h){
+ const {el,date,external,render}=h;let forecast=null,events=[],forecastError='',historyError='',checkedAt=null,pending=false,started=false,lastAttempt=0,chartMeta=null,chartStarted=false,chartError='';
+ function refreshView(){if(['forecast','models'].includes(h.section()))render();}
+ async function refreshReset(force=false){if(pending||lastAttempt&&Date.now()-lastAttempt<(force?30000:900000))return;started=true;lastAttempt=Date.now();pending=true;refreshView();
+  const results=await Promise.allSettled([json(origin+'/api/forecast').then(parseForecast),json(origin+'/api/timeline',2097152).then(parseTimeline)]);
+  if(results[0].status==='fulfilled'){forecast=results[0].value;forecastError='';}else forecastError=forecast?'预测暂时读取失败，保留上次成功快照。':'预测暂时不可读，未生成替代概率。';
+  if(results[1].status==='fulfilled'){events=results[1].value;historyError='';}else historyError=events.length?'历史读取失败，保留原记录。':'历史暂时不可读。';
+  checkedAt=new Date().toISOString();pending=false;refreshView();
+ }
+ function reset(){if(!started)queueMicrotask(()=>void refreshReset());const latest=latestPublicReset(forecast,events),stale=!forecast||Date.now()-Date.parse(forecast.at)>3600000;
+  return [el('section',{className:'panel reset-intro public-live-reset'},el('span',{className:'eyebrow'},'WILL RESET · PUBLIC API'),el('h2',{},'预测有来源，判断有边界。'),el('p',{},'来自 Will Reset 的第三方预测，网页直接读取公开接口。'),el('div',{className:'reset-empty-probs'},el('div',{},el('span',{},'未来 24h'),el('strong',{},forecast?.p24==null?'—':forecast.p24+'%')),el('div',{},el('span',{},'未来 48h'),el('strong',{},forecast?.p48==null?'—':forecast.p48+'%'))),el('p',{className:'subdued'},forecast?'预测起点 '+date(forecast.at)+' · '+forecast.version:pending?'正在读取公开预测…':'暂无可用预测'),stale&&forecast?el('p',{className:'pill amber'},'历史快照：不代表当前时刻的未来窗口'):null,checkedAt?el('small',{},'本次检查 '+date(checkedAt)):null,external(origin+'/zh/','来源：Will Reset')),
+  forecastError||historyError?el('p',{className:'callout',role:'status'},[forecastError,historyError].filter(Boolean).join(' ')):null,
+  el('section',{className:'panel reset-provider-latest'},el('h3',{},'最近全局重置 · 第三方记录'),el('strong',{},latest?date(latest.at):'—'),latest?el('p',{className:'subdued'},latest.label):null,latest?el('p',{},latest.title):el('p',{},'暂无可用全局记录'),latest?.note?el('p',{className:'subdued'},latest.note):null,latest?.url?external(latest.url,'查看重置依据'):null),
+  forecast?.promise?el('details',{className:'panel'},el('summary',{},'源站当前信号'),el('p',{},forecast.promise.quote),forecast.promise.url===latest?.url?el('p',{className:'subdued'},'源站将同一条证据同时用于预告和最近重置，请核对原文。'):null,forecast.promise.url?external(forecast.promise.url,'信号原文'):null):null,
+  el('details',{className:'panel public-reset-history'},el('summary',{},'近期重置记录'),events.slice(0,6).map(e=>el('article',{className:'evidence'},el('small',{},({global:'全局重置',banked:'储备发放',promise:'预告'})[e.kind]+' · '+date(e.at)),el('p',{},e.title),e.url?external(e.url,'原始依据'):null)),external(origin+'/zh/timeline','打开历史时间线')),
+  el('p',{className:'method-note'},'概率沿用第三方结果，不代表 OpenAI 官方计划。全局重置与个人 5-hour / weekly 窗口分开；此页不读取个人账户或额度。'),external(origin+'/forecast-method','查看预测方法')];
+ }
+ async function refreshCharts(){chartStarted=true;try{const v=await json(new URL('./aa-charts.json',import.meta.url),8000);if(v?.schemaVersion!==1||!stamp(v.generatedAt)||v.sourceUrl!=='https://artificialanalysis.ai/'||!Array.isArray(v.charts)||v.charts.length!==3||new Set(v.charts.map(c=>c.id)).size!==3||v.charts.some(c=>({intelligence:'aa-intelligence.png',speed:'aa-speed.png',cost:'aa-cost.png'})[c.id]!==c.file||!/^[a-f0-9]{64}$/.test(c.sha256)))throw Error();chartMeta=v;chartError='';}catch{chartError=chartMeta?'图表检查失败，保留已读取快照。':'图表快照暂未生成或暂时不可读。';}refreshView();}
+ function models(){if(!chartStarted)queueMicrotask(()=>void refreshCharts());return [el('section',{className:'panel'},el('span',{className:'eyebrow'},'ARTIFICIAL ANALYSIS · CHART SNAPSHOT'),el('h2',{},'模型排行，只看重点。'),el('p',{},'本地绘制的柱状图快照。近一年发布、综合能力 ≥ 25，每个模型在每张图中仅保留最佳配置。'),chartMeta?el('small',{className:'subdued'},'模型数据检查 '+date(chartMeta.measuredAt)+' · 图表生成 '+date(chartMeta.generatedAt)):null,chartMeta&&(!stamp(chartMeta.measuredAt)||Date.now()-Date.parse(chartMeta.measuredAt)>54*3600000)?el('p',{className:'pill amber'},'模型数据缓存待更新'):null,external('https://artificialanalysis.ai/','Source: Artificial Analysis')),
+ chartError?el('p',{role:'status',className:'callout'},chartError):null,
+ chartMeta?el('div',{className:'public-aa-charts'},chartMeta.charts.map(c=>{const name=({intelligence:'综合能力',speed:'输出速度',cost:'API 任务成本'})[c.id],url='./'+c.file+'?v='+c.sha256;return el('figure',{className:'panel'},el('img',{src:url,alt:'AA '+name+'柱状图（图片快照）',width:790,height:1040,loading:'lazy',onerror:e=>e.target.replaceWith(el('p',{},'图表图片读取失败，请稍后重试。'))}),el('figcaption',{},el('a',{className:'link',href:url,target:'_blank',rel:'noopener noreferrer'},'查看'+name+'大图 ↗')));})):el('div',{className:'empty'},chartError?'暂无图表':'正在读取图表…'),
+ el('details',{className:'panel'},el('summary',{},'来源与排名口径'),el('p',{},'图中数值来自 Artificial Analysis，图表由 Agent Intelligence Hub 绘制，不代表 AA 认可或背书。速度与成本分别独立排名；成本假设每次输入10k、输出2k Token，不等于订阅额度。'),el('p',{},'公开版仅分享图片，不提供模型数据列表、比较器或原始数据下载。完整数据分析保留在本机。'),external('https://artificialanalysis.ai/data-api','数据与授权'))];}
+ return {reset,models,refreshReset,refreshCharts,get resetBusy(){return pending;}};
+}
