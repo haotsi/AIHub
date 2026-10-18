@@ -1144,6 +1144,12 @@ body:not(.light) .product-glyph img { filter: invert(1); }
 .model-view-tabs, .model-tabs { border-radius: 9px; }
 .source-health-card, .source-health-overview, .reset-readiness { border-radius: 14px; }
 .source-card-heading h3 { font-size: 16px; }
+.source-recovery-hint { font-size: 12px !important; color: var(--muted); margin: 10px 0 !important; }
+.review-source-context { max-width: 760px; margin: 0 0 24px; padding: 14px 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--panel); }
+.review-source-context p { margin: 0; }
+.review-source-context strong { font-size: 13px; font-weight: 600; }
+.review-source-context span { display: block; font-size: 12px; color: var(--muted); margin-top: 4px; }
+.review-source-context>div { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 10px; font-size: 12px; }
 .source-scope, .source-observations, .source-cache-note { font-size: 12px; }
 .source-health-overview strong { font-family: var(--font-ui); }
 
@@ -1319,6 +1325,15 @@ body:not(.light) .product-glyph img { filter: invert(1); }
 .calm-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); margin-bottom: 24px; }
 .briefing-coverage { color: var(--muted); font-size: 13px; line-height: 1.8; margin: 0 0 36px; }
 .briefing-coverage a { margin-left: 12px; white-space: nowrap; }
+.dashboard-health { margin: -4px 0 32px; font-size: 13px; line-height: 1.8; }
+.dashboard-health p { margin: 8px 0; }
+.dashboard-health .health-issue { border: 0; padding: 0; background: none; }
+.health-issue summary { color: var(--amber); cursor: pointer; }
+.health-issue p,.health-issue li { color: var(--muted); }
+.health-issue ul { padding-left: 20px; margin: 8px 0; }
+.health-publication { color: var(--muted); }
+.health-publication a { margin-left: 8px; white-space: nowrap; }
+#public-publication { scroll-margin-top: 90px; }
 .briefing-links { display: flex; flex-wrap: wrap; gap: 16px 28px; padding: 24px 0; color: var(--muted); font-size: 13px; }
 .editorial-queue { margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--border); }
 .editorial-queue summary { cursor: pointer; }
