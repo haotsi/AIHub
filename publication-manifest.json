@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artifactHash": "788716dc75526bbf45ebd97e92090d059de111c7552ee109eb4ff2ee5233c2aa",
-  "snapshotHash": "676038de577cf891fd68ce158ec49e62e24330f3e1e53f3082dcea20e71811e5",
+  "artifactHash": "29f9829ec1dc1a0188c1fb01b3eb2a074f12524049694a6c600ea8d87d02a90c",
+  "snapshotHash": "e23fb72fdfe4155b1d06fb767799717dee13af0a7df37cecb67e545bd6f45a0e",
   "files": [
     {
       "file": ".nojekyll",
@@ -35,8 +35,8 @@
     },
     {
       "file": "data.json",
-      "bytes": 365662,
-      "sha256": "ea81b86a502aa444555cdad7e7c7518b090db3601ae97b7a6152def815d3fc1c"
+      "bytes": 385004,
+      "sha256": "983170ca0ccfd20dddd2cf192577df8df14b61a4ef532fbd701218b36156c721"
     },
     {
       "file": "fonts/manifest.json",
