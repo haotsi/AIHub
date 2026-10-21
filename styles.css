@@ -16,6 +16,8 @@
 /* The shared starport lives in a dark frame regardless of the reader theme. */
 .public-starport button.button{background:#294653;color:#d9e7ea;border-color:#64889666;box-shadow:none}.public-starport button.button:hover:not(:disabled){background:#355969}.public-starport button.button:disabled{color:#9aafb8;background:#203744;opacity:.65}.public-starport header>div:last-child{display:flex;align-items:center;gap:8px}
 
+.public-constellation{min-width:0}.public-constellation .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.public-app .reading-switch{flex-wrap:wrap}.public-constellation .constellation-detail .button{display:inline-flex;background:#264b70;color:#e9f1fa;border-color:#7194bc55}.public-constellation .constellation-detail a{overflow-wrap:anywhere}.public-constellation .constellation-toolbar .field{max-width:160px}
+
 /* Noto Sans SC, SIL OFL 1.1. Self-hosted variable font; Unicode segments load on demand. */
 @font-face {
   font-family: 'Hub Sans';
