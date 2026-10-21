@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "artifactHash": "5cc54a30436ae30f2c8e5c8bf62c37c461c29442f28e29880b534f1af84bd0d3",
+  "artifactHash": "f420664d6fac71a6b53b14052468e88641554570549c733c478f551e430f53fc",
   "snapshotHash": "ee827eb8c873c7bb9c52dc01df1007dc88335a47acc543a70c751eca0df92176",
   "files": [
     {
@@ -555,8 +555,8 @@
     },
     {
       "file": "index.html",
-      "bytes": 2696,
-      "sha256": "703f3902e9dc40bd941b0be4effbb7ba4b1c2ed77962ec8d8b7907f8408981b4"
+      "bytes": 7212,
+      "sha256": "ca3699a3c4c764ef71d7831e1ce5bf2c2713a318d2ccfe0e7c00399ffbdd814d"
     },
     {
       "file": "local-preview.js",
