@@ -1,19 +1,19 @@
-const origin='https://willreset.com';
+const origin='https://codex-reset.com';
 const stamp=value=>typeof value==='string'&&Number.isFinite(Date.parse(value))&&Date.parse(value)<=Date.now()+300000;
-const safeLink=value=>{if(typeof value!=='string'||!value.trim()||value.length>2000)return null;try{const u=new URL(value,origin);return u.protocol==='https:'&&!u.username&&!u.password&&!u.port&&['willreset.com','x.com','twitter.com','openai.com','status.openai.com','learn.chatgpt.com'].includes(u.hostname)?u.href:null;}catch{return null;}};
+const safeLink=value=>{if(typeof value!=='string'||!value.trim()||value.length>2000)return null;try{const u=new URL(value,origin);return u.protocol==='https:'&&!u.username&&!u.password&&!u.port&&['codex-reset.com','x.com','twitter.com','openai.com','status.openai.com','learn.chatgpt.com'].includes(u.hostname)?u.href:null;}catch{return null;}};
 const text=(value,max=400)=>typeof value==='string'?value.slice(0,max):'';
 async function json(url,maximum=1048576){const response=await fetch(url,{cache:'no-store',credentials:'omit',redirect:'error',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(12000)});if(!response.ok)throw Error('来源暂不可读');const reader=response.body.getReader();let size=0,raw='';const decoder=new TextDecoder();try{while(true){const part=await reader.read();if(part.done)break;size+=part.value.byteLength;if(size>maximum){await reader.cancel();throw Error('响应超限');}raw+=decoder.decode(part.value,{stream:true});}return JSON.parse(raw+decoder.decode());}finally{reader.releaseLock();}}
 export function parseForecast(value){
- if(!value||!stamp(value.computed_at)||typeof value.model_version!=='string'||value.model_version.length>120)throw Error('预测格式异常');
+ if(!value||!stamp(value.updated_at)||!value.probabilities||typeof value.probabilities!=='object')throw Error('预测格式异常');
  const probability=v=>{if(v==null)return null;if(typeof v!=='number'||!Number.isFinite(v)||v<0||v>100)throw Error('预测数值异常');return v;};
  if(value.last_reset_at!=null&&!stamp(value.last_reset_at))throw Error('重置时间异常');
- return {at:value.computed_at,version:value.model_version,p24:probability(value.prob_24),p48:probability(value.prob_48),lastAt:value.last_reset_at??null,lastUrl:safeLink(value.last_reset_url),lastText:text(value.last_reset_text),promise:value.promise?.active===true?{quote:text(value.promise.quote),url:safeLink(value.promise.url),at:stamp(value.promise.at)?value.promise.at:null}:null};
+ return {at:value.updated_at,version:text(value.model?.version,120)||'Codex Reset',p24:probability(value.probabilities.rounded_24h),p48:probability(value.probabilities.rounded_48h),lastAt:value.last_reset_at??null,lastUrl:null,lastText:'',promise:null};
 }
 export function parseTimeline(value){if(!value||!Array.isArray(value.events)||value.events.length>200)throw Error('历史格式异常');return value.events.flatMap(e=>{
  if(!e||!stamp(e.announced_at)||typeof e.id!=='string'||e.id.length>200)return [];
  if(e.preview!=null&&typeof e.preview!=='boolean')return [];
- const kind=e.scope!=='global'?'other':e.kind==='banked'||e.reset_kind==='banked'?'banked':e.preview===true||e.kind==='reset_preview'?'promise':e.kind==='reset'?'global':'other';
- if(kind==='other')return [];return [{id:e.id,kind,at:e.announced_at,title:text(e.summary||e.body,220),url:safeLink(e.source_url)}];
+ const kind=e.reset_kind==='banked'||e.banked_grant===true||e.group==='credits'?'banked':e.scope!=='global'?'other':e.preview===true?'promise':e.group==='reset'&&e.announcement_state==='announced'&&e.confirmed!==false?'global':'other';
+ if(kind==='other')return [];return [{id:e.id,kind,at:e.announced_at,title:text(e.summary||e.body,220),url:safeLink(e.url)}];
 }).sort((a,b)=>Date.parse(b.at)-Date.parse(a.at)).slice(0,30);}
 export function latestPublicReset(p,events){
  const globals=events.filter(e=>e.kind==='global'),event=globals[0],id=p?.lastUrl?.match(/\/status\/(\d+)/)?.[1],matching=id?events.find(e=>e.id===id):null;
@@ -24,14 +24,14 @@ export function latestPublicReset(p,events){
 export function createPublicData(h){
  const {el,date,external,render}=h;let forecast=null,events=[],forecastError='',historyError='',checkedAt=null,pending=false,started=false,lastAttempt=0,chartMeta=null,chartStarted=false,chartError='';
  function refreshView(){if(['forecast','models'].includes(h.section()))render();}
- async function refreshReset(force=false){if(pending||lastAttempt&&Date.now()-lastAttempt<(force?30000:900000))return;started=true;lastAttempt=Date.now();pending=true;refreshView();
+ async function refreshReset(force=false){if(pending||lastAttempt&&Date.now()-lastAttempt<(force?60000:900000))return;started=true;lastAttempt=Date.now();pending=true;refreshView();
   const results=await Promise.allSettled([json(origin+'/api/forecast').then(parseForecast),json(origin+'/api/timeline',2097152).then(parseTimeline)]);
   if(results[0].status==='fulfilled'){forecast=results[0].value;forecastError='';}else forecastError=forecast?'预测暂时读取失败，保留上次成功快照。':'预测暂时不可读，未生成替代概率。';
   if(results[1].status==='fulfilled'){events=results[1].value;historyError='';}else historyError=events.length?'历史读取失败，保留原记录。':'历史暂时不可读。';
   checkedAt=new Date().toISOString();pending=false;refreshView();
  }
  function reset(){if(!started)queueMicrotask(()=>void refreshReset());const latest=latestPublicReset(forecast,events),stale=!forecast||Date.now()-Date.parse(forecast.at)>3600000;
-  return [el('section',{className:'panel reset-intro public-live-reset'},el('span',{className:'eyebrow'},'WILL RESET · PUBLIC API'),el('h2',{},'预测有来源，判断有边界。'),el('p',{},'来自 Will Reset 的第三方预测，网页直接读取公开接口。'),el('div',{className:'reset-empty-probs'},el('div',{},el('span',{},'未来 24h'),el('strong',{},forecast?.p24==null?'—':forecast.p24+'%')),el('div',{},el('span',{},'未来 48h'),el('strong',{},forecast?.p48==null?'—':forecast.p48+'%'))),el('p',{className:'subdued'},forecast?'预测起点 '+date(forecast.at)+' · '+forecast.version:pending?'正在读取公开预测…':'暂无可用预测'),stale&&forecast?el('p',{className:'pill amber'},'历史快照：不代表当前时刻的未来窗口'):null,checkedAt?el('small',{},'本次检查 '+date(checkedAt)):null,external(origin+'/zh/','来源：Will Reset')),
+  return [el('section',{className:'panel reset-intro public-live-reset'},el('span',{className:'eyebrow'},'CODEX RESET · PUBLIC API'),el('h2',{},'预测有来源，判断有边界。'),el('p',{},'来自 Codex Reset 的第三方预测，网页直接读取公开接口。'),el('div',{className:'reset-empty-probs'},el('div',{},el('span',{},'未来 24h'),el('strong',{},forecast?.p24==null?'—':forecast.p24+'%')),el('div',{},el('span',{},'未来 48h'),el('strong',{},forecast?.p48==null?'—':forecast.p48+'%'))),el('p',{className:'subdued'},forecast?'预测起点 '+date(forecast.at)+' · '+forecast.version:pending?'正在读取公开预测…':'暂无可用预测'),stale&&forecast?el('p',{className:'pill amber'},'历史快照：不代表当前时刻的未来窗口'):null,checkedAt?el('small',{},'本次检查 '+date(checkedAt)):null,external(origin+'/zh/','来源：Codex Reset')),
   forecastError||historyError?el('p',{className:'callout',role:'status'},[forecastError,historyError].filter(Boolean).join(' ')):null,
   el('section',{className:'panel reset-provider-latest'},el('h3',{},'最近全局重置 · 第三方记录'),el('strong',{},latest?date(latest.at):'—'),latest?el('p',{className:'subdued'},latest.label):null,latest?el('p',{},latest.title):el('p',{},'暂无可用全局记录'),latest?.note?el('p',{className:'subdued'},latest.note):null,latest?.url?external(latest.url,'查看重置依据'):null),
   forecast?.promise?el('details',{className:'panel'},el('summary',{},'源站当前信号'),el('p',{},forecast.promise.quote),forecast.promise.url===latest?.url?el('p',{className:'subdued'},'源站将同一条证据同时用于预告和最近重置，请核对原文。'):null,forecast.promise.url?external(forecast.promise.url,'信号原文'):null):null,

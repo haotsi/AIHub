@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "artifactHash": "9b4f93960816c8df5708371b6dea16e6c59a4769c000678d89b75097acfc629f",
+  "artifactHash": "a28af598ed8fb6aafd54fafb4ccbf882511dce1769b2b9ef88a9d099342a9195",
   "snapshotHash": "4bb5f6ea7d85ebd73e56929d244456e28d510cc46d39d33cd67e5e8de0f69fcf",
   "files": [
     {
@@ -11,22 +11,22 @@
     {
       "file": "aa-charts.json",
       "bytes": 649,
-      "sha256": "d4dc8779cb0bae7174edc9e29f60ae685c3605098819bfdec62ea1b09eb53e9a"
+      "sha256": "38d792b426fd96eba7bd2436e577706d91ea9545132f5bcf883ca2ab50ba2b9c"
     },
     {
       "file": "aa-cost.png",
-      "bytes": 73917,
-      "sha256": "9d0703c632cce660986b3327e71383f782d16635edf885284ea39c1c3906d054"
+      "bytes": 73733,
+      "sha256": "c9e72c9f7a6dbee8492b48153c000dd18728507fb8edee411d8273a50d4e72b8"
     },
     {
       "file": "aa-intelligence.png",
-      "bytes": 71145,
-      "sha256": "a99f21f85a1e5be4cd58859e10d12acfad3cf0a9090de16c746145727a6e35b2"
+      "bytes": 70975,
+      "sha256": "18b3a809770fe608cfe9ec5429998a4ede5740b7e261dcc2769f54cff742794d"
     },
     {
       "file": "aa-speed.png",
-      "bytes": 62161,
-      "sha256": "6aefd1234d4dfa7be0f2defd7047638e71d1c3be831eb80999f5def6efd5e1d2"
+      "bytes": 61977,
+      "sha256": "0b4848590111f9fc88f647b5b4a4a83a020fbf74aa5d2798cf8e99a1eea517f4"
     },
     {
       "file": "app.js",
@@ -555,13 +555,13 @@
     },
     {
       "file": "index.html",
-      "bytes": 2643,
-      "sha256": "db9c8f4350ba54c3ff386a757e04fe2778882406e864212c5b2a9c9d01ba6e34"
+      "bytes": 2647,
+      "sha256": "eb6061ff95c09e2b1131d9a141145f43488873125ee2f0a2a47b4945c0707c12"
     },
     {
       "file": "local-preview.js",
-      "bytes": 25781,
-      "sha256": "ca6b350f6bad3909d6f098b937e01e3e1e2e7128d234a089061f2e942b07d6d6"
+      "bytes": 25804,
+      "sha256": "2f95cd1f7583addc2626213a1ac0c5b628efe3c0e1195204aa093ce00fb4b9f2"
     },
     {
       "file": "model-tools.js",
@@ -570,8 +570,8 @@
     },
     {
       "file": "public-data.js",
-      "bytes": 10046,
-      "sha256": "e4a1b85c6074cbb59de50837601fabf8e0dd41b96187158a089158fbcb4cd334"
+      "bytes": 9958,
+      "sha256": "f5963bed9df4ef07f570c9db538ca257b0cdc47b0f091744994f121b978c536a"
     },
     {
       "file": "styles.css",
