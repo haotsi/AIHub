@@ -43,5 +43,5 @@ export function createPublicData(h){
  chartError?el('p',{role:'status',className:'callout'},chartError):null,
  chartMeta?el('div',{className:'public-aa-charts'},chartMeta.charts.map(c=>{const name=({intelligence:'综合能力',speed:'输出速度',cost:'API 任务成本'})[c.id],url='./'+c.file+'?v='+c.sha256;return el('figure',{className:'panel'},el('img',{src:url,alt:'AA '+name+'柱状图（图片快照）',width:790,height:1040,loading:'lazy',onerror:e=>e.target.replaceWith(el('p',{},'图表图片读取失败，请稍后重试。'))}),el('figcaption',{},el('a',{className:'link',href:url,target:'_blank',rel:'noopener noreferrer'},'查看'+name+'大图 ↗')));})):el('div',{className:'empty'},chartError?'暂无图表':'正在读取图表…'),
  el('details',{className:'panel'},el('summary',{},'来源与排名口径'),el('p',{},'图中数值来自 Artificial Analysis，图表由 Agent Intelligence Hub 绘制，不代表 AA 认可或背书。速度与成本分别独立排名；成本假设每次输入10k、输出2k Token，不等于订阅额度。'),el('p',{},'公开版仅分享图片，不提供模型数据列表、比较器或原始数据下载。完整数据分析保留在本机。'),external('https://artificialanalysis.ai/data-api','数据与授权'))];}
- return {reset,models,refreshReset,refreshCharts,get resetBusy(){return pending;}};
+ return {reset,models,refreshReset,refreshCharts,starportSnapshot:()=>({forecast,events,checkedAt,error:[forecastError,historyError].filter(Boolean).join(' ')||null}),get resetBusy(){return pending;}};
 }

@@ -13,6 +13,8 @@
 .cache-recovery,.filter-recovery{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:11px;color:var(--muted);margin:16px 0 24px}.cache-recovery{padding:14px 16px;border:1px solid var(--border);border-radius:10px;background:var(--panel)}.selected-models{min-width:0;flex:1}.selected-models>summary{cursor:pointer;padding:8px 0;line-height:1.7}.selected-model{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 0;border-top:1px solid var(--border)}.selected-model>.button{flex-shrink:0}.comparison-selection{align-items:flex-start}.comparison-selection>.button{flex-shrink:0}
 
 .public-aa-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:18px}.public-aa-charts figure{margin:0;padding:8px;min-width:0}.public-aa-charts img{display:block;width:100%;height:auto;border-radius:12px}.public-aa-charts figcaption{padding:10px 12px}.public-live-reset .reset-empty-probs{margin:24px 0}.reset-provider-latest>strong{font-size:28px}.public-reset-history article{margin:16px 0}@media(max-width:1000px){.public-aa-charts{grid-template-columns:1fr}.public-aa-charts figure{max-width:650px;width:100%;margin:auto}}
+/* The shared starport lives in a dark frame regardless of the reader theme. */
+.public-starport button.button{background:#294653;color:#d9e7ea;border-color:#64889666;box-shadow:none}.public-starport button.button:hover:not(:disabled){background:#355969}.public-starport button.button:disabled{color:#9aafb8;background:#203744;opacity:.65}.public-starport header>div:last-child{display:flex;align-items:center;gap:8px}
 
 /* Noto Sans SC, SIL OFL 1.1. Self-hosted variable font; Unicode segments load on demand. */
 @font-face {
