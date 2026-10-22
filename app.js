@@ -1,5 +1,5 @@
 globalThis.HUB_READING_POLICY={"ranks":{"action":3,"focus":2,"normal":1,"low":0},"labels":{"action":"需要检查","focus":"值得关注","normal":"按需阅读","low":"低优先级"},"homeLimit":3,"conditionLimit":2,"highlightLimit":3};
-import {createPublicData} from './public-data.js?v=330796704f28e83b6683f0743abb457a1022227d5b9a5f68afe98fbfde787f15';
+import {createPublicData} from './public-data.js?v=7b2f1c8343bc39db523a9492d69fdc8a09e4d400c652cdf49b47cad0a443ad11';
 const main=document.querySelector('#main'),sidebar=document.querySelector('#sidebar');
 const storageKey='agent-intelligence-public-v1';
 const categories={'Model Release':'模型发布','ChatGPT Update':'ChatGPT 更新','Codex Feature':'Codex 功能','Codex CLI / SDK':'CLI / SDK','API Update':'API 更新','Pricing / Usage Limits':'价格与额度',Deprecation:'弃用迁移',Incident:'服务事件','Community Signal':'社区信号','Reset Signal':'Reset 信号'};
@@ -51,7 +51,7 @@ const constellationHost=el('div',{className:'public-constellation-host'});let co
 function wantsConstellation(){const r=route();return r.section==='updates'&&!r.id&&r.params.get('display')==='constellation';}
 function syncConstellation(){if(!wantsConstellation()||!constellationHost.isConnected||!data){constellationModule?.unmountConstellation();return;}
  if(constellationModule){const f=filters();constellationModule.mountConstellation(constellationHost,{rows:match(data.updates,f).map(u=>({...u,reading:reading(u)})),sources:data.sources,filters:f,days:f.days||90,selected:/^[a-f0-9]{64}$/.test(route().params.get('star')??'')?route().params.get('star'):null,timezone:personal.timezone,change:filterChange,back:location.hash});return;}
- if(!constellationLoading)constellationLoading=import('./constellation.js?v=330796704f28e83b6683f0743abb457a1022227d5b9a5f68afe98fbfde787f15').then(module=>{constellationModule=module;syncConstellation();}).catch(()=>{constellationLoading=null;if(constellationHost.isConnected)constellationHost.replaceChildren(empty('星图暂时不可读','可以切回文字列表，或刷新页面重试。'));});
+ if(!constellationLoading)constellationLoading=import('./constellation.js?v=7b2f1c8343bc39db523a9492d69fdc8a09e4d400c652cdf49b47cad0a443ad11').then(module=>{constellationModule=module;syncConstellation();}).catch(()=>{constellationLoading=null;if(constellationHost.isConnected)constellationHost.replaceChildren(empty('星图暂时不可读','可以切回文字列表，或刷新页面重试。'));});
 }
 function updateViewSwitch(){const sky=wantsConstellation();return el('div',{className:'update-view-switch','aria-label':'更新显示方式'},el('button',{className:'button '+(!sky?'primary':''),'aria-pressed':!sky,onclick:()=>filterChange({display:null,star:null})},'文字列表'),el('button',{className:'button '+(sky?'primary':''),'aria-pressed':sky,onclick:()=>filterChange({display:'constellation',days:filters().days||90})},'星图探索'));}
 function feed(section){const f=filters();if(section==='updates'&&wantsConstellation())return [updateViewSwitch(),controls(f),constellationHost];const all=match(data.updates.filter(u=>section!=='saved'||personal.saved.includes(u.id)),f),important=ordered(all.filter(u=>['action','focus'].includes(reading(u).level)));const focus=f.view!=='all'&&!f.q&&section!=='saved';const rows=focus?important:[...all].sort((a,b)=>String(b.publishedAt??b.fetchedAt).localeCompare(String(a.publishedAt??a.fetchedAt)));const size=focus?5:12,pages=Math.max(1,Math.ceil(rows.length/size)),page=Math.min(f.page,pages);return [
@@ -64,7 +64,7 @@ function feed(section){const f=filters();if(section==='updates'&&wantsConstellat
 function detail(id){const candidateBack=route().params.get('back'),back=candidateBack&&/^#\/updates\?/.test(candidateBack)&&candidateBack.length<3000?candidateBack:'#/updates';const u=data.updates.find(r=>r.id===id);if(!u)return empty('未找到这条更新','当前快照可能未包含这条历史记录。','#/updates');const p=reading(u);return el('article',{className:'article'},el('a',{href:back,className:'link'},back==='#/updates'?'← 返回更新列表':'← 返回更新星图'),el('div',{className:'detail-intro'},el('div',{className:'update-meta'},el('span',{className:'product-label'},u.product),el('span',{},categories[u.category]),u.sourceType&&u.sourceType!=='official'?el('span',{className:'pill amber'},u.sourceType==='first-party'?'人物公开言论':'第三方转述'):null,el('time',{},date(u.publishedAt,u.datePrecision))),el('h2',{className:'public-detail-title'},p.headline),p.essentials.length?el('ul',{className:'public-essentials'},p.essentials.map(v=>el('li',{},v))):null),el('div',{className:'panel decision-panel'},el('span',{className:'eyebrow'},'YOUR NEXT STEP'),el('h3',{},'接下来可以做什么'),el('p',{},p.action),el('small',{},'规则建议；适用计划、平台和账户资格以原文为准。')),
   p.highlights.length?el('section',{},sectionTitle('发生了什么'),p.highlights.map(h=>el('details',{className:'evidence-point'},el('summary',{},h.label),el('blockquote',{},h.quote)))):null,
   el('details',{className:'public-original'},el('summary',{},'查看原始标题与摘录'),el('h3',{},u.title),el('div',{className:'article-body'},u.excerpt||'此来源未提供正文。'),el('small',{},'公开摘录最多600字符，完整上下文请打开原文。')),
-  u.originUrl?el('p',{},external(u.originUrl,'打开 Tibo 原始公开帖子')):null,sectionTitle('可追溯的来源证据'),u.evidence.map(e=>el('div',{className:'evidence'},external(e.url,data.sources.find(s=>s.id===e.sourceId)?.name??e.sourceId),el('small',{},'采集 '+date(e.fetchedAt)+' · 核实 '+date(e.verifiedAt)),el('details',{},el('summary',{},'原始标识与内容指纹'),el('small',{},e.externalId),el('small',{},'SHA256 '+e.contentHash)))),el('details',{className:'public-original'},el('summary',{},'查看规则评分与时间'),el('p',{},'重要性 '+u.importance+' / 100'),u.reasons.map(r=>el('span',{className:'pill'},r.label+' +'+r.points)),el('p',{className:'subdued'},'首次收录 '+date(u.fetchedAt)+' · 修订 '+date(u.updatedAt))));}
+  u.originUrl?el('p',{},external(u.originUrl,'打开 Tibo 原始公开帖子')):null,u.referenceUrl?el('p',{className:'callout'},'第三方聚合记录，未独立读取官方原文。',external(u.referenceUrl,'聚合方引用的原文 ↗')):null,sectionTitle('可追溯的来源证据'),u.evidence.map(e=>el('div',{className:'evidence'},external(e.url,data.sources.find(s=>s.id===e.sourceId)?.name??e.sourceId),el('small',{},'采集 '+date(e.fetchedAt)+' · 核实 '+date(e.verifiedAt)),el('details',{},el('summary',{},'原始标识与内容指纹'),el('small',{},e.externalId),el('small',{},'SHA256 '+e.contentHash)))),el('details',{className:'public-original'},el('summary',{},'查看规则评分与时间'),el('p',{},'重要性 '+u.importance+' / 100'),u.reasons.map(r=>el('span',{className:'pill'},r.label+' +'+r.points)),el('p',{className:'subdued'},'首次收录 '+date(u.fetchedAt)+' · 修订 '+date(u.updatedAt))));}
 function calendarDate(value,precision='instant'){
   if(precision==='day')return value.slice(0,10);
   const parts=new Intl.DateTimeFormat('en',{timeZone:personal.timezone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(value)),part=t=>parts.find(p=>p.type===t).value;
@@ -81,7 +81,7 @@ function models(){return publicData.models();}
 const starportHost=el('div',{className:'public-starport'});let starportModule=null,starportLoading=null;
 function syncStarport(){if(route().section!=='forecast'||isLocalPage()||!starportHost.isConnected){starportModule?.unmountStarport();return;}
  if(starportModule){starportModule.mountStarport(starportHost,publicData.starportSnapshot(),personal.timezone);return;}
- if(!starportLoading)starportLoading=import('./starport.js?v=330796704f28e83b6683f0743abb457a1022227d5b9a5f68afe98fbfde787f15').then(module=>{starportModule=module;syncStarport();}).catch(()=>{starportLoading=null;if(starportHost.isConnected)starportHost.replaceChildren(el('p',{className:'callout'},'星港资源暂时不可读，请刷新页面重试。'));});
+ if(!starportLoading)starportLoading=import('./starport.js?v=7b2f1c8343bc39db523a9492d69fdc8a09e4d400c652cdf49b47cad0a443ad11').then(module=>{starportModule=module;syncStarport();}).catch(()=>{starportLoading=null;if(starportHost.isConnected)starportHost.replaceChildren(el('p',{className:'callout'},'星港资源暂时不可读，请刷新页面重试。'));});
 }
 function forecast(){return [...publicData.reset(),starportHost];}
 function settings(){return el('div',{className:'panel settings-panel'},el('h2',{},'你的浏览器，你的阅读习惯。'),el('p',{},'收藏、已读、主题与时区只保存在当前浏览器，不上传，也不与本地版或其他设备同步。'),el('label',{className:'settings-label'},'显示时区',select('显示时区',personal.timezone,['Asia/Taipei','Asia/Shanghai','UTC','America/New_York','Europe/London'].map(v=>[v,v]),v=>{personal.timezone=v;save();render();})),el('p',{className:'method-note'},'清除浏览器存储后，这些状态会丢失。公开页面不需要 API Key。'));}
@@ -96,7 +96,7 @@ function render(){const {section,id}=route(),localPage=isLocalPage();if(!wantsCo
 }
 function validSnapshot(next){
   const text=v=>typeof v==='string',stamp=v=>text(v)&&Number.isFinite(Date.parse(v)),optionalStamp=v=>v===null||stamp(v);
-  if(!next||next.schemaVersion!==1||!stamp(next.exportedAt)||!text(next.contentHash)||!Array.isArray(next.updates)||next.updates.length>1000||!Array.isArray(next.sources)||next.sources.length>9)return false;
+  if(!next||next.schemaVersion!==1||!stamp(next.exportedAt)||!text(next.contentHash)||!Array.isArray(next.updates)||next.updates.length>1000||!Array.isArray(next.sources)||next.sources.length>10)return false;
   for(const u of next.updates){
     if(!u||!text(u.id)||!/^[a-f0-9]{64}$/.test(u.id)||![u.title,u.excerpt,u.product,u.category,u.recommendation].every(text)||!Number.isFinite(u.importance)||!optionalStamp(u.publishedAt)||!Array.isArray(u.reasons)||!Array.isArray(u.evidence)||u.evidence.length<1||u.evidence.length>6||u.evidence.some(e=>!e||![e.sourceId,e.url,e.externalId,e.contentHash].every(text)))return false;
     if(u.aliases&&(!Array.isArray(u.aliases)||u.aliases.length>6||u.aliases.some(id=>!text(id)||!/^[a-f0-9]{64}$/.test(id))))return false;
@@ -144,10 +144,11 @@ async function loadLocal(quiet=true){
     document.querySelector('.local-pill').replaceChildren(el('span',{className:'dot ok'}),'本机静态预览');
     const response=await fetch(new URL('./local-data.json',import.meta.url),{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!response.ok)throw Error();
     const raw=await response.text();if(new TextEncoder().encode(raw).length>8*1024*1024)throw Error();
-    const next=JSON.parse(raw),module=await import('./local-preview.js?v=330796704f28e83b6683f0743abb457a1022227d5b9a5f68afe98fbfde787f15');if(!await module.validPrivateSnapshot(next))throw Error();
+    const next=JSON.parse(raw),module=await import('./local-preview.js?v=7b2f1c8343bc39db523a9492d69fdc8a09e4d400c652cdf49b47cad0a443ad11');if(!await module.validPrivateSnapshot(next))throw Error();
     const unchanged=localCache?.contentHash===next.contentHash;localModule=module;localCache=next;localError='';
     if(!quiet)toast(unchanged?'本机缓存没有变化。':'已读取本机模型与 Reset 缓存。');
   }catch{if(localMode)localError=localCache?'本机缓存检查失败，继续显示已读取的数据。':'本机缓存暂不可读，请先完成本地同步。';}
   finally{localLoading=false;localResolved=true;if(!before.resolved||before.mode!==localMode||before.hash!==localCache?.contentHash||before.error!==localError)render();updateBusy();}
 }
 function refreshAll(quiet=false){const localPage=localMode&&['models','forecast'].includes(route().section);return Promise.all([load(quiet||localPage),loadLocal(quiet||!localPage),!localPage&&route().section==='forecast'?publicData.refreshReset(!quiet):!localPage&&route().section==='models'&&!quiet?publicData.refreshCharts():null]);}
+

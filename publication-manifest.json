@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artifactHash": "5f2aee2082cfcbc6f2e678169153619984ed43c97131bc38d13cf44e7886af14",
-  "snapshotHash": "ee827eb8c873c7bb9c52dc01df1007dc88335a47acc543a70c751eca0df92176",
+  "artifactHash": "deb5da223918cb501be2c069b70a897f84db13cb3b1883ce3097cffe62b39d5f",
+  "snapshotHash": "39eb6690626d6b93644b7ec7529894cac1b309cfaef28cf2f9f8aac24e8f6ccf",
   "files": [
     {
       "file": ".nojekyll",
@@ -11,27 +11,27 @@
     {
       "file": "aa-charts.json",
       "bytes": 649,
-      "sha256": "12416de99d0739bca80407b6ea52047ae5bba9a7b6a5a52b2495aa5d53157a97"
+      "sha256": "d17377aab9c99b5a731913a07f094637824388491bf14b085ecce63b3aeed999"
     },
     {
       "file": "aa-cost.png",
-      "bytes": 73765,
-      "sha256": "e57b43a3b369d57cb7a744085d89a6c335b84b597cd6f05168b4fb7be3fab953"
+      "bytes": 73897,
+      "sha256": "681974785de7421aedd00ad7616d2f6687567b0825d314d3ffdae7297ee4b310"
     },
     {
       "file": "aa-intelligence.png",
-      "bytes": 71005,
-      "sha256": "90b4403c1a01ee36a5d9a81f1a2daf10b7d3a4d5aa7ba118a87835844b243ea8"
+      "bytes": 71132,
+      "sha256": "26862e5bd1e7f72de2ff5d8a0c561709868be8b9180aceb9e4180560ddbbc82b"
     },
     {
       "file": "aa-speed.png",
-      "bytes": 61812,
-      "sha256": "d6e3d5bebe1b9ac2bacb871eac0eb96b1458557cb2e10329367cb6ba5346ff84"
+      "bytes": 61953,
+      "sha256": "e21740c008167d5db5971e6c990dd6449bd098915fe2c80ab5dcda95fbec0353"
     },
     {
       "file": "app.js",
-      "bytes": 36818,
-      "sha256": "4492412297179728baacd8d6ef3d6774c51276cb2c071defab3fd71e831c6b5f"
+      "bytes": 36984,
+      "sha256": "8b382f95209d682d98d1464149e983e7b463bf29a5b62f9eea95cff524163930"
     },
     {
       "file": "constellation.css",
@@ -45,8 +45,8 @@
     },
     {
       "file": "data.json",
-      "bytes": 462710,
-      "sha256": "6574191c995709a3b32fd9b1660f4219930c6bcf2c6f96964695af7206b9fbee"
+      "bytes": 480781,
+      "sha256": "391f9e34361e7fe881cc8f197afd2983822b6481330a82237ba73a40952cae89"
     },
     {
       "file": "fonts/manifest.json",
@@ -566,12 +566,12 @@
     {
       "file": "index.html",
       "bytes": 8477,
-      "sha256": "bfca1f03b586796c8c38180be6ed86a0b4b3836897ed0b9abde9d9a15bed8002"
+      "sha256": "a7d590a78d282dd8beb736d58d68fa820bbe01629dd3c9501787e5dc4d0ec6b0"
     },
     {
       "file": "local-preview.js",
       "bytes": 25871,
-      "sha256": "ff143173c4831f6351206ae29078d3e9c5577af47f9dbed85e8d6cea11b740a2"
+      "sha256": "d65aab134647c469910e6f7e4c170e5019d234725ba6ab3bb7d145c589926fb0"
     },
     {
       "file": "model-tools.js",
