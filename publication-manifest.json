@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "artifactHash": "1e6585922412d7d3ecd7e7fe0fc1a14c35875058a04c7e88ab867125e15061e7",
+  "artifactHash": "761e0e55ba1af60a4d10edd6f8e169886bd26d10b98edac8bb2b68ecc65548a5",
   "snapshotHash": "1b6695d6d71e07e9f4f9c4e91fec0c63198aafb83b6766d56c76b41f2b54971c",
   "files": [
     {
@@ -11,27 +11,27 @@
     {
       "file": "aa-charts.json",
       "bytes": 649,
-      "sha256": "ea61a449ed59d0e5b83276a231d7d1ec150b08b7bab1f163f7fa6a69358dad90"
+      "sha256": "8d514ca19234c33a6ac9e1f4a3f74ac09ac4ca7e8e1d17b008840aa5f920a96c"
     },
     {
       "file": "aa-cost.png",
-      "bytes": 73876,
-      "sha256": "7b81d0bf7f4fcaacebfca09125045a0820210fa0815df1fc8aa92fa412e318f6"
+      "bytes": 73835,
+      "sha256": "b5bca5ba15ae61e221248b73ba2178f6436cbbaff63776ba0619c5aa0f709e6c"
     },
     {
       "file": "aa-intelligence.png",
-      "bytes": 71119,
-      "sha256": "c1c857f728d274f6d5eb0ab3bd506edd2c59474a4a8b555d358fa40fe3b6d94c"
+      "bytes": 71072,
+      "sha256": "621435b6b3e451144fbcee5490bc053b8eb710db429e6d685af1fe0a3ce7bef9"
     },
     {
       "file": "aa-speed.png",
-      "bytes": 62258,
-      "sha256": "61e2af0ed74a06238507de3b6cefbf0834bc98a3cb7132c3cd11db80c33b411a"
+      "bytes": 62506,
+      "sha256": "3a95cf302e505394854756811f57d15fa291f4077ddb83c7c1eecd6f852ebe28"
     },
     {
       "file": "app.js",
-      "bytes": 38332,
-      "sha256": "afbbfa27f4a3443ab6b61ce06d444884ee0f53f8cd19e4ee6d99ad79d86c3be4"
+      "bytes": 45062,
+      "sha256": "481b9a87d7c0ad583358d51c492bd2d9d486f664f6b280446ae60994de49042a"
     },
     {
       "file": "constellation.css",
@@ -566,12 +566,12 @@
     {
       "file": "index.html",
       "bytes": 8477,
-      "sha256": "f9e746931172685d844c31751d659e2b31ac1476df8e03b897dc10f66f613791"
+      "sha256": "16a2e2c76ce8658178344f609d7d646d3d465615220101a08d3b57a0a608f84a"
     },
     {
       "file": "local-preview.js",
       "bytes": 25871,
-      "sha256": "241abc2bc6f8840e0e09b1e1147607db222a0ec1a85f836c1120815f60b4285c"
+      "sha256": "5e0a8a25447e2ca100210c51d06769938a762a7d85a5afb1b983d3c8ad0318da"
     },
     {
       "file": "model-tools.js",

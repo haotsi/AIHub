@@ -1,5 +1,5 @@
 globalThis.HUB_READING_POLICY={"ranks":{"action":3,"focus":2,"normal":1,"low":0},"labels":{"action":"需要检查","focus":"值得关注","normal":"按需阅读","low":"低优先级"},"homeLimit":3,"conditionLimit":2,"highlightLimit":3};
-import {createPublicData} from './public-data.js?v=bb3f8fc77b8796fd23d56933d718f0e769b05ddc364c4bf573c0cbe861e810c9';
+import {createPublicData} from './public-data.js?v=af675518ad2c02eb0ec7fb6d8f8120b92370cdb68efd2e75107f48465b0fdc59';
 const main=document.querySelector('#main'),sidebar=document.querySelector('#sidebar');
 const storageKey='agent-intelligence-public-v1';
 const categories={'Model Release':'模型发布','ChatGPT Update':'ChatGPT 更新','Codex Feature':'Codex 功能','Codex CLI / SDK':'CLI / SDK','API Update':'API 更新','Pricing / Usage Limits':'价格与额度',Deprecation:'弃用迁移',Incident:'服务事件','Community Signal':'社区信号','Reset Signal':'Reset 信号'};
@@ -7,6 +7,9 @@ const sections={dashboard:'情报总览',updates:'更新情报',weekly:'每周�
 const descriptions={dashboard:'重要变化，先看这三件事。',updates:'先理解变化，再决定是否行动。',weekly:'把一周的变化，整理成少量值得记住的事。',models:'先明确任务，再比较能力与成本。',forecast:'查看可信来源，保留预测边界。',saved:'留给以后认真读的内容。',sources:'数据的来处，和它此刻的状态。',settings:'为当前浏览器设置阅读习惯。'};
 const paths={dashboard:'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',updates:'M5 4h14v16H5z M8 8h8 M8 12h8 M8 16h5',weekly:'M4 5h16v15H4z M8 3v4 M16 3v4 M4 10h16 M8 14h3',models:'M12 3l9 5-9 5-9-5z M3 12l9 5 9-5 M3 16l9 5 9-5',forecast:'M3 12h4l3-7 4 14 3-7h4',saved:'M6 3h12v18l-6-4-6 4z',sources:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18 M3 12h18 M12 3c-5 6-5 12 0 18 M12 3c5 6 5 12 0 18',settings:'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8 M12 3v2 M12 19v2 M3 12h2 M19 12h2 M5.6 5.6L7 7 M17 17l1.4 1.4 M5.6 18.4L7 17 M17 7l1.4-1.4'};
 let data,error='',loading=false,weekOffset=0,toastTimer;
+const snapshotCacheKey='agent-intelligence-snapshot-v1:'+new URL('.',import.meta.url).pathname;
+const maxSnapshotBytes=8*1024*1024,maxStoredSnapshotBytes=2*1024*1024;
+let snapshotFromCache=false,snapshotSavedAt=null,publicIssue=null,cacheNote='',loadAttempt=0,lastPublicCheck=null,nextAutomaticCheck=0;
 let localMode=false,localCache=null,localModule=null,localError='',localLoading=false,localResolved=false;
 let personal={saved:[],read:[],theme:'light',timezone:'Asia/Taipei'};
 try{const value=JSON.parse(localStorage.getItem(storageKey)??'{}');for(const key of ['saved','read'])if(Array.isArray(value[key]))personal[key]=value[key].filter(v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v)).slice(0,2000);if(['light','dark'].includes(value.theme))personal.theme=value.theme;if(typeof value.timezone==='string'){new Intl.DateTimeFormat('zh-CN',{timeZone:value.timezone});personal.timezone=value.timezone;}}catch{/* Browsing works without storage. */}
@@ -51,7 +54,7 @@ const constellationHost=el('div',{className:'public-constellation-host'});let co
 function wantsConstellation(){const r=route();return r.section==='updates'&&!r.id&&r.params.get('display')==='constellation';}
 function syncConstellation(){if(!wantsConstellation()||!constellationHost.isConnected||!data){constellationModule?.unmountConstellation();return;}
  if(constellationModule){const f=filters();constellationModule.mountConstellation(constellationHost,{rows:match(data.updates,f).map(u=>({...u,reading:reading(u)})),sources:data.sources,filters:f,days:f.days||90,selected:/^[a-f0-9]{64}$/.test(route().params.get('star')??'')?route().params.get('star'):null,timezone:personal.timezone,change:filterChange,back:location.hash});return;}
- if(!constellationLoading)constellationLoading=import('./constellation.js?v=bb3f8fc77b8796fd23d56933d718f0e769b05ddc364c4bf573c0cbe861e810c9').then(module=>{constellationModule=module;syncConstellation();}).catch(()=>{constellationLoading=null;if(constellationHost.isConnected)constellationHost.replaceChildren(empty('星图暂时不可读','可以切回文字列表，或刷新页面重试。'));});
+ if(!constellationLoading)constellationLoading=import('./constellation.js?v=af675518ad2c02eb0ec7fb6d8f8120b92370cdb68efd2e75107f48465b0fdc59').then(module=>{constellationModule=module;syncConstellation();}).catch(()=>{constellationLoading=null;if(constellationHost.isConnected)constellationHost.replaceChildren(empty('星图暂时不可读','可以切回文字列表，或刷新页面重试。'));});
 }
 function updateViewSwitch(){const sky=wantsConstellation();return el('div',{className:'update-view-switch','aria-label':'更新显示方式'},el('button',{className:'button '+(!sky?'primary':''),'aria-pressed':!sky,onclick:()=>filterChange({display:null,star:null})},'文字列表'),el('button',{className:'button '+(sky?'primary':''),'aria-pressed':sky,onclick:()=>filterChange({display:'constellation',days:filters().days||90})},'星图探索'));}
 function feed(section){const f=filters();if(section==='updates'&&wantsConstellation())return [updateViewSwitch(),controls(f),constellationHost];const all=match(data.updates.filter(u=>section!=='saved'||personal.saved.includes(u.id)),f),important=ordered(all.filter(u=>['action','focus'].includes(reading(u).level)));const focus=f.view!=='all'&&!f.q&&section!=='saved';const rows=focus?important:[...all].sort((a,b)=>String(b.publishedAt??b.fetchedAt).localeCompare(String(a.publishedAt??a.fetchedAt)));const size=focus?5:12,pages=Math.max(1,Math.ceil(rows.length/size)),page=Math.min(f.page,pages);return [
@@ -81,22 +84,22 @@ function models(){return publicData.models();}
 const starportHost=el('div',{className:'public-starport'});let starportModule=null,starportLoading=null;
 function syncStarport(){if(route().section!=='forecast'||isLocalPage()||!starportHost.isConnected){starportModule?.unmountStarport();return;}
  if(starportModule){starportModule.mountStarport(starportHost,publicData.starportSnapshot(),personal.timezone);return;}
- if(!starportLoading)starportLoading=import('./starport.js?v=bb3f8fc77b8796fd23d56933d718f0e769b05ddc364c4bf573c0cbe861e810c9').then(module=>{starportModule=module;syncStarport();}).catch(()=>{starportLoading=null;if(starportHost.isConnected)starportHost.replaceChildren(el('p',{className:'callout'},'星港资源暂时不可读，请刷新页面重试。'));});
+ if(!starportLoading)starportLoading=import('./starport.js?v=af675518ad2c02eb0ec7fb6d8f8120b92370cdb68efd2e75107f48465b0fdc59').then(module=>{starportModule=module;syncStarport();}).catch(()=>{starportLoading=null;if(starportHost.isConnected)starportHost.replaceChildren(el('p',{className:'callout'},'星港资源暂时不可读，请刷新页面重试。'));});
 }
 function forecast(){return [...publicData.reset(),starportHost];}
-function settings(){return el('div',{className:'panel settings-panel'},el('h2',{},'你的浏览器，你的阅读习惯。'),el('p',{},'收藏、已读、主题与时区只保存在当前浏览器，不上传，也不与本地版或其他设备同步。'),el('label',{className:'settings-label'},'显示时区',select('显示时区',personal.timezone,['Asia/Taipei','Asia/Shanghai','UTC','America/New_York','Europe/London'].map(v=>[v,v]),v=>{personal.timezone=v;save();render();})),el('p',{className:'method-note'},'清除浏览器存储后，这些状态会丢失。公开页面不需要 API Key。'));}
+function settings(){return el('div',{className:'panel settings-panel'},el('h2',{},'你的浏览器，你的阅读习惯。'),el('p',{},'收藏、已读、主题与时区只保存在当前浏览器，不上传，也不与本地版或其他设备同步。'),el('label',{className:'settings-label'},'显示时区',select('显示时区',personal.timezone,['Asia/Taipei','Asia/Shanghai','UTC','America/New_York','Europe/London'].map(v=>[v,v]),v=>{personal.timezone=v;save();render();})),el('p',{className:'method-note'},'此浏览器也会保存上次成功读取的公开快照，打开时先显示，再后台检查更新。清除浏览器存储会移除快照及阅读状态。首次访问或页面资源未加载时仍需联网。公开页面不需要 API Key。'));}
 function isLocalPage(){return ['models','forecast'].includes(route().section)&&(localMode||!localResolved&&localLoading);}
-function updateBusy(){const local=isLocalPage(),busy=local?localLoading:loading||(route().section==='forecast'&&publicData.resetBusy);main.setAttribute('aria-busy',String(busy));const button=main.querySelector('.refresh-button');if(button){button.disabled=busy;button.textContent=busy?'正在检查…':local?'检查本机缓存':route().section==='forecast'?'刷新 Reset 数据':'检查已发布快照';}for(const retry of main.querySelectorAll('[data-cache-retry]'))retry.disabled=localLoading;for(const retry of main.querySelectorAll('[data-public-retry]'))retry.disabled=loading;}
+function updateBusy(){const local=isLocalPage(),busy=local?localLoading:loading||(route().section==='forecast'&&publicData.resetBusy);main.setAttribute('aria-busy',String(busy));const button=main.querySelector('.refresh-button');if(button){button.disabled=busy;button.textContent=busy?'正在检查…':local?'检查本机缓存':route().section==='forecast'?'刷新 Reset 数据':'检查已发布快照';}for(const retry of main.querySelectorAll('[data-cache-retry]'))retry.disabled=localLoading;for(const retry of main.querySelectorAll('[data-public-retry]'))retry.disabled=loading;updatePublicStatus();}
 function render(){const {section,id}=route(),localPage=isLocalPage();if(!wantsConstellation())constellationModule?.unmountConstellation();if(section!=='forecast'||localPage)starportModule?.unmountStarport();document.querySelector('#navigation').replaceChildren(...Object.entries(sections).map(([key,label])=>el('a',{href:key==='dashboard'?'#/':'#/'+key,className:'nav-item '+(key===section?'active':''),'aria-current':key===section?'page':null,onclick:()=>setNavigation(false)},icon(key),label,key==='saved'&&personal.saved.length?el('span',{className:'nav-count'},personal.saved.length):null)));const title=id?'更新详情':sections[section]??'页面不存在';document.title=title+' · Agent Intelligence Hub';document.querySelector('#breadcrumb-current').textContent=title;document.querySelector('#global-search').value=filters().q;
   const header=el('div',{className:'page-heading'},el('div',{},el('span',{className:'eyebrow'},'AGENT INTELLIGENCE HUB'),el('h1',{},title),el('p',{},descriptions[section]??'')),el('button',{className:'button refresh-button',onclick:()=>refreshAll()},'检查已发布快照'));
-  if(!localPage&&error){constellationModule?.unmountConstellation();starportModule?.unmountStarport();main.replaceChildren(header,empty('公开快照读取失败',error),el('button',{className:'button','data-public-retry':true,disabled:loading,onclick:()=>load(false)},'重新读取快照'));updateBusy();return;}
-  if(!localPage&&!data){constellationModule?.unmountConstellation();starportModule?.unmountStarport();main.replaceChildren(header,el('div',{className:'skeleton',role:'status','aria-label':'正在读取公开快照'}));updateBusy();return;}
+  if(!localPage&&error){constellationModule?.unmountConstellation();starportModule?.unmountStarport();main.replaceChildren(header,el('div',{className:'cache-recovery public-load-status','data-public-load-status':true,role:'status','aria-live':'polite'}),empty('公开快照读取失败',error),el('button',{className:'button','data-public-retry':true,disabled:loading,onclick:()=>load(false)},'重新读取快照'));updateBusy();return;}
+  if(!localPage&&!data){constellationModule?.unmountConstellation();starportModule?.unmountStarport();main.replaceChildren(header,el('div',{className:'cache-recovery public-load-status','data-public-load-status':true,role:'status','aria-live':'polite'}),el('div',{className:'skeleton',role:'status','aria-label':'正在读取公开快照'}));updateBusy();return;}
   const content=section==='dashboard'?dashboard():['updates','saved'].includes(section)?id?detail(id):feed(section):section==='weekly'?weekly():section==='sources'?sourcesView():section==='models'?localContent('models'):section==='forecast'?localContent('forecast'):section==='settings'?settings():empty('页面不存在','从侧边导航打开页面。');
-  main.replaceChildren(header,el('div',{className:'public-snapshot-strip'},el('span',{className:'dot '+(localPage?(localError?'warn':localCache?'ok':'muted'):data.sources.some(s=>state(s).tone!=='ok')?'warn':'ok')}),el('span',{},localPage?(localCache?'本机快照 '+date(localCache.exportedAt):'正在读取本机缓存'):'快照 '+date(data.exportedAt)),el('span',{className:'snapshot-divider'},'·'),el('span',{},localPage?'本机只读缓存':'公开来源可追溯')), ...[content].flat(Infinity).filter(Boolean),el('footer',{className:'footer'},el('span',{},'Agent Intelligence Hub · 独立工具，非 OpenAI 官方产品'),el('span',{},'静态快照 / '+personal.timezone)));updateBusy();syncStarport();syncConstellation();
+  main.replaceChildren(header,el('div',{className:'public-snapshot-strip'},el('span',{className:'dot '+(localPage?(localError?'warn':localCache?'ok':'muted'):data.sources.some(s=>state(s).tone!=='ok')?'warn':'ok')}),el('span',localPage?{}:{'data-public-snapshot-time':true},localPage?(localCache?'本机快照 '+date(localCache.exportedAt):'正在读取本机缓存'):'快照 '+date(data.exportedAt)),el('span',{className:'snapshot-divider'},'·'),el('span',{},localPage?'本机只读缓存':'公开来源可追溯')),localPage?null:el('div',{className:'cache-recovery public-load-status','data-public-load-status':true,role:'status','aria-live':'polite'}), ...[content].flat(Infinity).filter(Boolean),el('footer',{className:'footer'},el('span',{},'Agent Intelligence Hub · 独立工具，非 OpenAI 官方产品'),el('span',{},'静态快照 / '+personal.timezone)));updateBusy();syncStarport();syncConstellation();
 }
 function validSnapshot(next){
   const text=v=>typeof v==='string',stamp=v=>text(v)&&Number.isFinite(Date.parse(v)),optionalStamp=v=>v===null||stamp(v);
-  if(!next||next.schemaVersion!==1||!stamp(next.exportedAt)||!text(next.contentHash)||!Array.isArray(next.updates)||next.updates.length>1000||!Array.isArray(next.sources)||next.sources.length>12)return false;
+  if(!next||next.schemaVersion!==1||!stamp(next.exportedAt)||!text(next.contentHash)||!/^[a-f0-9]{64}$/.test(next.contentHash)||!Array.isArray(next.updates)||next.updates.length>1000||!Array.isArray(next.sources)||next.sources.length>12)return false;
   for(const s of next.sources){if(s.retry&&(!Number.isSafeInteger(s.retry.failureCount)||s.retry.failureCount<1||!stamp(s.retry.lastFailedAt)||!stamp(s.retry.nextRetryAt)))return false;}
   for(const u of next.updates){
     if(!u||!text(u.id)||!/^[a-f0-9]{64}$/.test(u.id)||![u.title,u.excerpt,u.product,u.category,u.recommendation].every(text)||!Number.isFinite(u.importance)||!optionalStamp(u.publishedAt)||!Array.isArray(u.reasons)||!Array.isArray(u.evidence)||u.evidence.length<1||u.evidence.length>6||u.evidence.some(e=>!e||![e.sourceId,e.url,e.externalId,e.contentHash].every(text)))return false;
@@ -110,11 +113,95 @@ function validSnapshot(next){
   }
   return next.sources.every(s=>s&&[s.id,s.name,s.url].every(text)&&Number.isFinite(s.staleHours)&&optionalStamp(s.lastSuccessAt)&&optionalStamp(s.checkedAt));
 }
+function publicFault(code,message,retryable=false){return Object.assign(new Error(message),{publicSnapshotFault:true,code,retryable});}
+function publicFailure(cause){
+  if(cause?.publicSnapshotFault===true)return cause;
+  if(['TimeoutError','AbortError'].includes(cause?.name))return publicFault('timeout','读取公开数据超时',true);
+  if(navigator.onLine===false)return publicFault('offline','当前网络已断开',false);
+  return publicFault('network','网络连接未完成',true);
+}
+async function checkedPublicSnapshot(raw){
+  if(raw.length>maxSnapshotBytes||new TextEncoder().encode(raw).length>maxSnapshotBytes)throw publicFault('size','公开数据超过读取上限');
+  let next;try{next=JSON.parse(raw);}catch{throw publicFault('json','服务器返回了非 JSON 或损坏的数据');}
+  let valid=false;try{valid=validSnapshot(next);}catch{}if(!valid)throw publicFault('schema','公开数据格式与当前页面不匹配，请刷新页面');
+  if(!globalThis.crypto?.subtle)throw publicFault('browser','浏览器无法校验公开数据，请使用新版浏览器通过 HTTPS 打开');
+  const bytes=new TextEncoder().encode(JSON.stringify([next.updates,next.sources]));
+  const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),v=>v.toString(16).padStart(2,'0')).join('');
+  if(digest!==next.contentHash)throw publicFault('integrity','公开数据完整性校验未通过');
+  return next;
+}
+function applyPublicSnapshot(next){
+  const aliases=new Map(next.updates.flatMap(u=>(u.aliases??[]).map(id=>[id,u.id])));let migrated=false;
+  for(const key of ['saved','read']){const ids=[...new Set(personal[key].map(id=>aliases.get(id)??id))];if(JSON.stringify(ids)!==JSON.stringify(personal[key])){personal[key]=ids;migrated=true;}}
+  if(migrated)save();data=next;error='';
+}
+function savePublicSnapshot(next){
+  try{
+    const savedAt=new Date().toISOString(),raw=JSON.stringify({version:1,savedAt,snapshot:next});
+    if(raw.length>maxStoredSnapshotBytes||new TextEncoder().encode(raw).length>maxStoredSnapshotBytes){cacheNote='本次数据已读取；快照较大，未保存到浏览器。';return;}
+    localStorage.setItem(snapshotCacheKey,raw);snapshotSavedAt=savedAt;cacheNote='';
+  }catch{cacheNote='本次数据已读取；浏览器存储不可用，关闭页面后可能需要重新联网。';}
+}
+function updatePublicStatus(){
+  const host=main.querySelector('[data-public-load-status]');if(!host)return;
+  let message='';
+  if(publicIssue)message=publicIssue.message+'。'+(data?'继续显示上次成功的数据。':'尚无可用快照。');
+  else if(snapshotFromCache)message='已显示上次保存的快照'+(loading?'，正在后台检查更新。':'。');
+  else if(loading&&loadAttempt>1)message='公开数据读取较慢，正在自动重试。';
+  else if(cacheNote)message=cacheNote;
+  else if(lastPublicCheck)message='已检查 '+date(lastPublicCheck)+(snapshotSavedAt?' · 已保存到此浏览器':'');
+  if(loading&&loadAttempt>1)message+=' 自动重试 '+(loadAttempt-1)+' / 2。';
+  host.hidden=!message;host.replaceChildren(el('span',{},message));
+  if(publicIssue&&!loading&&data)host.append(el('button',{className:'button','data-public-retry':true,onclick:()=>load(false)},'重新检查'));
+  const stamp=main.querySelector('[data-public-snapshot-time]');if(stamp)stamp.textContent=(snapshotFromCache?'上次快照 ':'快照 ')+date(data?.exportedAt);
+}
+async function readPublicSnapshot(){
+  const response=await fetch(new URL('./data.json',import.meta.url),{cache:'no-cache',credentials:'omit',signal:AbortSignal.timeout(20000)});
+  if(!response.ok){
+    const fault=publicFault('http','公开数据请求失败（HTTP '+response.status+'）',[408,425,429].includes(response.status)||response.status>=500);
+    const header=response.headers.get('retry-after');
+    if(header){const seconds=Number(header),delay=Number.isFinite(seconds)?seconds*1000:Date.parse(header)-Date.now();if(Number.isFinite(delay)&&delay>0){fault.retryDelay=delay;if(delay>10000){fault.retryable=false;fault.message+='，服务器要求稍后再试';}}}
+    throw fault;
+  }
+  if(Number(response.headers.get('content-length'))>maxSnapshotBytes)throw publicFault('size','公开数据超过读取上限');
+  const reader=response.body?.getReader();if(!reader)return checkedPublicSnapshot(await response.text());
+  const decoder=new TextDecoder();let size=0,raw='';
+  try{while(true){const part=await reader.read();if(part.done)break;size+=part.value.byteLength;if(size>maxSnapshotBytes){await reader.cancel();throw publicFault('size','公开数据超过读取上限');}raw+=decoder.decode(part.value,{stream:true});}raw+=decoder.decode();}
+  finally{reader.releaseLock();}
+  return checkedPublicSnapshot(raw);
+}
+async function startPublicSnapshot(){
+  loading=true;updateBusy();let cached=null;
+  try{
+    const raw=localStorage.getItem(snapshotCacheKey);
+    if(raw){
+      if(raw.length>maxStoredSnapshotBytes||new TextEncoder().encode(raw).length>maxStoredSnapshotBytes)throw Error();
+      const entry=JSON.parse(raw),saved=Date.parse(entry.savedAt);
+      if(entry.version!==1||!Number.isFinite(saved)||saved>Date.now()+300000)throw Error();
+      cached=await checkedPublicSnapshot(JSON.stringify(entry.snapshot));snapshotSavedAt=entry.savedAt;
+    }
+  }catch{cacheNote='浏览器缓存不可用，正在重新读取公开数据。';}
+  finally{loading=false;}
+  if(cached){applyPublicSnapshot(cached);snapshotFromCache=true;render();}
+  await load(true);
+}
 async function load(quiet=false){
-  if(loading)return;const previousError=error;let changed=false;loading=true;updateBusy();
-  try{const r=await fetch(new URL('./data.json',import.meta.url),{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();const raw=await r.text();if(new TextEncoder().encode(raw).length>8*1024*1024)throw Error();const next=JSON.parse(raw);if(!validSnapshot(next))throw Error();changed=data?.contentHash!==next.contentHash;const aliases=new Map(next.updates.flatMap(u=>(u.aliases??[]).map(id=>[id,u.id])));let migrated=false;for(const key of ['saved','read']){const ids=[...new Set(personal[key].map(id=>aliases.get(id)??id))];if(JSON.stringify(ids)!==JSON.stringify(personal[key])){personal[key]=ids;migrated=true;}}if(migrated)save();data=next;error='';if(!changed&&!quiet)toast('已发布数据没有变化。');}
-  catch{if(data&&!quiet)toast('检查失败，继续显示已读取的快照。',true);else if(!data)error='请稍后重试；原始来源仍可独立访问。';}
-  finally{loading=false;if(!isLocalPage()&&(changed||previousError!==error))render();updateBusy();}
+  if(loading||quiet&&Date.now()<nextAutomaticCheck)return;
+  const previousError=error;let changed=false;loading=true;loadAttempt=1;publicIssue=null;updateBusy();updatePublicStatus();
+  try{
+    let next;
+    for(let attempt=1;attempt<=3;attempt++){
+      loadAttempt=attempt;updatePublicStatus();
+      try{next=await readPublicSnapshot();break;}
+      catch(cause){const issue=publicFailure(cause);if(!issue.retryable||attempt===3)throw issue;publicIssue=issue;updatePublicStatus();await new Promise(resolve=>setTimeout(resolve,Math.max(issue.retryDelay??0,attempt===1?1000:3000)));}
+    }
+    changed=data?.contentHash!==next.contentHash;applyPublicSnapshot(next);snapshotFromCache=false;publicIssue=null;lastPublicCheck=new Date().toISOString();savePublicSnapshot(next);
+    if(!changed&&!quiet)toast('已发布数据没有变化。');
+  }catch(cause){publicIssue=publicFailure(cause);if(!data)error=publicIssue.message+'。已结束本轮读取，可稍后重试。';}
+  finally{
+    loading=false;loadAttempt=0;nextAutomaticCheck=Date.now()+60000;
+    if(!isLocalPage()&&(changed||previousError!==error))render();updateBusy();updatePublicStatus();
+  }
 }
 const mobileNavigation=matchMedia('(max-width:680px)');
 function setNavigation(open){sidebar.classList.toggle('open',open);sidebar.inert=mobileNavigation.matches&&!open;document.querySelector('#nav-backdrop').hidden=!open;document.querySelector('.main').inert=mobileNavigation.matches&&open;document.querySelector('#open-navigation').setAttribute('aria-expanded',String(open));if(open){sidebar.setAttribute('role','dialog');sidebar.setAttribute('aria-modal','true');document.querySelector('#close-navigation').focus();}else{sidebar.removeAttribute('role');sidebar.removeAttribute('aria-modal');if(sidebar.contains(document.activeElement))document.querySelector('#open-navigation').focus();}}
@@ -124,9 +211,10 @@ document.querySelector('#theme-button').addEventListener('click',()=>{personal.t
 document.querySelector('#open-navigation').addEventListener('click',()=>setNavigation(true));document.querySelector('#close-navigation').addEventListener('click',()=>setNavigation(false));document.querySelector('#nav-backdrop').addEventListener('click',()=>setNavigation(false));mobileNavigation.addEventListener('change',()=>setNavigation(false));
 window.addEventListener('hashchange',()=>{setNavigation(false);render();window.scrollTo({top:0});});
 window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();document.querySelector('#global-search').focus();}if(e.key==='Escape')setNavigation(false);if(e.key==='Tab'&&mobileNavigation.matches&&sidebar.classList.contains('open')){const items=[...sidebar.querySelectorAll('a,button')].filter(n=>n.getClientRects().length),first=items[0],last=items.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
-setNavigation(false);render();load();loadLocal();
+setNavigation(false);render();void startPublicSnapshot();loadLocal();
 
 setInterval(()=>{if(document.visibilityState==="visible")refreshAll(true);},300000);
+window.addEventListener('online',()=>{nextAutomaticCheck=0;void load(true);});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")refreshAll(true);});
 
 
@@ -146,7 +234,7 @@ async function loadLocal(quiet=true){
     document.querySelector('.local-pill').replaceChildren(el('span',{className:'dot ok'}),'本机静态预览');
     const response=await fetch(new URL('./local-data.json',import.meta.url),{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!response.ok)throw Error();
     const raw=await response.text();if(new TextEncoder().encode(raw).length>8*1024*1024)throw Error();
-    const next=JSON.parse(raw),module=await import('./local-preview.js?v=bb3f8fc77b8796fd23d56933d718f0e769b05ddc364c4bf573c0cbe861e810c9');if(!await module.validPrivateSnapshot(next))throw Error();
+    const next=JSON.parse(raw),module=await import('./local-preview.js?v=af675518ad2c02eb0ec7fb6d8f8120b92370cdb68efd2e75107f48465b0fdc59');if(!await module.validPrivateSnapshot(next))throw Error();
     const unchanged=localCache?.contentHash===next.contentHash;localModule=module;localCache=next;localError='';
     if(!quiet)toast(unchanged?'本机缓存没有变化。':'已读取本机模型与 Reset 缓存。');
   }catch{if(localMode)localError=localCache?'本机缓存检查失败，继续显示已读取的数据。':'本机缓存暂不可读，请先完成本地同步。';}
