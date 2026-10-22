@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artifactHash": "a0f884117fc9d0c40f0cba14f5b142ab4d53cdb8aaf8b74a0849fd5834058f30",
-  "snapshotHash": "f05831dbb3ee5dcf1667bf26a939c26f53e4abb9a6a7958d1e086806b26f61c7",
+  "artifactHash": "2b448adcbec0c3587965d11ec2a529ddcfc23b7440d0a4be45e04766a5146f48",
+  "snapshotHash": "f131ac25037d8eff54cf484becb6b8d2ca8a854fc9767f1f41ba84fc9d0778a7",
   "files": [
     {
       "file": ".nojekyll",
@@ -30,8 +30,8 @@
     },
     {
       "file": "app.js",
-      "bytes": 37537,
-      "sha256": "51894a0c63a350801ea14cc6942889d74a328f74e455ca5e84a8d70ad9c6d815"
+      "bytes": 38290,
+      "sha256": "27ca6723b3567cde3866cab0ba64fd88f97fc6dfc45898f20d239c4a7fd6f5b6"
     },
     {
       "file": "constellation.css",
@@ -45,8 +45,8 @@
     },
     {
       "file": "data.json",
-      "bytes": 487046,
-      "sha256": "ee1bf206f8ce281e8cb5b8ded26ba66c2b407ddec6158563474529c2ceb8e242"
+      "bytes": 487490,
+      "sha256": "79a165b0880a32edebc180e9e675185e03813f3a77c197fbab2777f9b76512c7"
     },
     {
       "file": "fonts/manifest.json",
@@ -566,12 +566,12 @@
     {
       "file": "index.html",
       "bytes": 8477,
-      "sha256": "a32ceee3b33bcc88b505c5112fe2d96f6d22676949cc99a65f2416dc178500b0"
+      "sha256": "31f385b532b515d6958498c05f0e9a695b40a836207783d1895ee9dc84df7d93"
     },
     {
       "file": "local-preview.js",
       "bytes": 25871,
-      "sha256": "9958e90b21145572fa71b2b90e1f3b810d517de69a55702274985af39e3a229a"
+      "sha256": "18bfa637911c180474ff1e9035d62fcc1703c891cdd8f276b701cfae70d6f1f2"
     },
     {
       "file": "model-tools.js",
