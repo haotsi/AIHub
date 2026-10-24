@@ -23,6 +23,7 @@ export function latestPublicReset(p,events){
 }
 export function createPublicData(h){
  const {el,date,external,render}=h;let forecast=null,events=[],forecastError='',historyError='',checkedAt=null,pending=false,started=false,lastAttempt=0,chartMeta=null,chartStarted=false,chartError='';
+ let chartViewer;
  function refreshView(){if(['forecast','models'].includes(h.section()))render();}
  async function refreshReset(force=false){if(pending||lastAttempt&&Date.now()-lastAttempt<(force?60000:900000))return;started=true;lastAttempt=Date.now();pending=true;refreshView();
   const results=await Promise.allSettled([json(origin+'/api/forecast').then(parseForecast),json(origin+'/api/timeline',2097152).then(parseTimeline)]);
@@ -39,9 +40,55 @@ export function createPublicData(h){
   el('p',{className:'method-note'},'概率沿用第三方结果，不代表 OpenAI 官方计划。全局重置与个人 5-hour / weekly 窗口分开；此页不读取个人账户或额度。'),external(origin+'/forecast-method','查看预测方法')];
  }
  async function refreshCharts(){chartStarted=true;try{const v=await json(new URL('./aa-charts.json',import.meta.url),8000);if(v?.schemaVersion!==1||!stamp(v.generatedAt)||v.sourceUrl!=='https://artificialanalysis.ai/'||!Array.isArray(v.charts)||v.charts.length!==3||new Set(v.charts.map(c=>c.id)).size!==3||v.charts.some(c=>({intelligence:'aa-intelligence.png',speed:'aa-speed.png',cost:'aa-cost.png'})[c.id]!==c.file||!/^[a-f0-9]{64}$/.test(c.sha256)))throw Error();chartMeta=v;chartError='';}catch{chartError=chartMeta?'图表检查失败，保留已读取快照。':'图表快照暂未生成或暂时不可读。';}refreshView();}
+ const chartName=id=>({intelligence:'综合能力',speed:'输出速度',cost:'API 任务成本'})[id];
+ const chartUrl=c=>new URL('./'+c.file+'?v='+c.sha256,import.meta.url).href;
+ function createChartViewer(){
+  const dialog=el('dialog',{className:'aa-chart-viewer','aria-labelledby':'aa-viewer-title'});
+  if(typeof dialog.showModal!=='function')return null;
+  let entries=[],index=0,actual=true,opener,scrollTop=0,address='',closing=false;
+  const owner='aa-'+Math.random().toString(36).slice(2),historyKey='hubAAChartViewer';
+  const title=el('h2',{id:'aa-viewer-title'}),count=el('span',{className:'aa-viewer-count',role:'status','aria-live':'polite'});
+  const canvas=el('div',{className:'aa-viewer-canvas',tabindex:'0','aria-label':'榜图，可滚动查看'});
+  const message=el('p',{className:'aa-viewer-message',role:'status',hidden:true});
+  const previous=el('button',{type:'button','aria-label':'上一张榜图',title:'上一张榜图',onclick:()=>move(-1)},'←');
+  const next=el('button',{type:'button','aria-label':'下一张榜图',title:'下一张榜图',onclick:()=>move(1)},'→');
+  const zoom=el('button',{type:'button',className:'aa-viewer-zoom','aria-pressed':'false',onclick:()=>setZoom(!actual)},'原尺寸');
+  const original=el('a',{className:'aa-viewer-original',target:'_blank',rel:'noopener noreferrer'},'原图 ↗');
+  const close=el('button',{type:'button','aria-label':'关闭榜图查看器',title:'关闭',onclick:()=>requestClose()},'×');
+  dialog.append(el('header',{},title,close),canvas,message,el('footer',{},previous,count,next,zoom,original));document.body.append(dialog);
+  const ownsHistory=()=>history.state?.[historyKey]?.owner===owner&&location.href===address;
+  const historyValue=()=>({...history.state,[historyKey]:{owner,index}});
+  function setZoom(value){actual=value;canvas.classList.toggle('is-actual',actual);zoom.textContent=actual?'适应屏幕':'原尺寸';zoom.setAttribute('aria-pressed',String(actual));zoom.setAttribute('aria-label',actual?'适应屏幕查看榜图':'按原始尺寸查看榜图');canvas.scrollTo({top:0,left:0,behavior:'instant'});}
+  function draw(){
+   const entry=entries[index],name=chartName(entry.id),url=chartUrl(entry),current=index;
+   title.textContent=name;count.textContent=(index+1)+' / '+entries.length;previous.disabled=index===0;next.disabled=index===entries.length-1;original.href=url;original.setAttribute('aria-label','在新标签页打开'+name+'原图');message.hidden=true;
+   canvas.replaceChildren(el('img',{src:url,alt:'AA '+name+'柱状图（图片快照）',width:790,height:1040,ondblclick:()=>setZoom(!actual),onerror:e=>{if(index===current&&e.target.isConnected){message.textContent='图表图片暂时无法显示，可尝试打开原图。';message.hidden=false;}}}));setZoom(actual);
+  }
+  function move(delta){const target=index+delta;if(target<0||target>=entries.length)return;index=target;draw();if(ownsHistory())try{history.replaceState(historyValue(),'',address);}catch{}}
+  function openAt(value,trigger,push=true){
+   if(!chartMeta)return false;
+   entries=chartMeta.charts.map(c=>({...c}));index=Math.max(0,Math.min(entries.length-1,value));opener=trigger??document.activeElement;scrollTop=window.scrollY;address=location.href;closing=false;actual=true;draw();
+   try{dialog.showModal();}catch{return false;}
+   document.body.classList.add('aa-viewer-open');close.focus({preventScroll:true});
+   if(push)try{history.pushState(historyValue(),'',address);}catch{}
+   return true;
+  }
+  function requestClose(){if(!dialog.open||closing)return;closing=true;const goBack=ownsHistory();dialog.close();if(goBack)history.back();}
+  dialog.addEventListener('cancel',e=>{e.preventDefault();requestClose();});
+  dialog.addEventListener('click',e=>{if(e.target!==dialog)return;const box=dialog.getBoundingClientRect();if(e.clientX<box.left||e.clientX>box.right||e.clientY<box.top||e.clientY>box.bottom)requestClose();});
+  dialog.addEventListener('close',()=>{document.body.classList.remove('aa-viewer-open');closing=false;if(location.href===address){window.scrollTo({top:scrollTop,behavior:'instant'});const target=opener?.isConnected?opener:document.querySelector('.public-aa-charts figcaption a[aria-label="放大查看'+chartName(entries[index].id)+'榜图"]');target?.focus({preventScroll:true});}});
+  dialog.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();requestClose();}else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();e.stopPropagation();}else if(!actual&&!e.ctrlKey&&!e.metaKey&&['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();e.stopPropagation();move(e.key==='ArrowLeft'?-1:1);}});
+  window.addEventListener('hashchange',()=>{if(dialog.open)dialog.close();});
+  window.addEventListener('popstate',()=>{if(ownsHistory()&&h.section()==='models'){if(!dialog.open)openAt(history.state[historyKey].index,document.activeElement,false);}else if(dialog.open)dialog.close();});
+  return {open:openAt};
+ }
+ function viewChart(event,index){
+  if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+  chartViewer??=createChartViewer();if(chartViewer?.open(index,event.currentTarget))event.preventDefault();
+ }
  function models(){if(!chartStarted)queueMicrotask(()=>void refreshCharts());return [el('section',{className:'panel'},el('span',{className:'eyebrow'},'ARTIFICIAL ANALYSIS · CHART SNAPSHOT'),el('h2',{},'模型排行，只看重点。'),el('p',{},'本地绘制的柱状图快照。近一年发布、综合能力 ≥ 25，每个模型在每张图中仅保留最佳配置。'),chartMeta?el('small',{className:'subdued'},'模型数据检查 '+date(chartMeta.measuredAt)+' · 图表生成 '+date(chartMeta.generatedAt)):null,chartMeta&&(!stamp(chartMeta.measuredAt)||Date.now()-Date.parse(chartMeta.measuredAt)>54*3600000)?el('p',{className:'pill amber'},'模型数据缓存待更新'):null,external('https://artificialanalysis.ai/','Source: Artificial Analysis')),
  chartError?el('p',{role:'status',className:'callout'},chartError):null,
- chartMeta?el('div',{className:'public-aa-charts'},chartMeta.charts.map(c=>{const name=({intelligence:'综合能力',speed:'输出速度',cost:'API 任务成本'})[c.id],url='./'+c.file+'?v='+c.sha256;return el('figure',{className:'panel'},el('img',{src:url,alt:'AA '+name+'柱状图（图片快照）',width:790,height:1040,loading:'lazy',onerror:e=>e.target.replaceWith(el('p',{},'图表图片读取失败，请稍后重试。'))}),el('figcaption',{},el('a',{className:'link',href:url,target:'_blank',rel:'noopener noreferrer'},'查看'+name+'大图 ↗')));})):el('div',{className:'empty'},chartError?'暂无图表':'正在读取图表…'),
+ chartMeta?el('div',{className:'public-aa-charts'},chartMeta.charts.map((c,index)=>{const name=chartName(c.id),url=chartUrl(c),open=e=>viewChart(e,index);return el('figure',{className:'panel'},el('figcaption',{},el('strong',{},name),el('a',{className:'link',href:url,target:'_blank',rel:'noopener noreferrer','aria-label':'放大查看'+name+'榜图',onclick:open},'放大查看 ↗')),el('div',{className:'aa-chart-scroll',tabindex:'0','aria-label':name+'榜图预览，可横向滚动'},el('a',{className:'aa-chart-preview',href:url,target:'_blank',rel:'noopener noreferrer',tabindex:'-1','aria-label':'放大查看'+name+'榜图',onclick:open},el('img',{src:url,alt:'AA '+name+'柱状图（图片快照）',width:790,height:1040,loading:'lazy',onerror:e=>e.target.replaceWith(el('p',{},'图表图片读取失败，请稍后重试。'))}))));})):el('div',{className:'empty'},chartError?'暂无图表':'正在读取图表…'),
  el('details',{className:'panel'},el('summary',{},'来源与排名口径'),el('p',{},'图中数值来自 Artificial Analysis，图表由 Agent Intelligence Hub 绘制，不代表 AA 认可或背书。速度与成本分别独立排名；成本假设每次输入10k、输出2k Token，不等于订阅额度。'),el('p',{},'公开版仅分享图片，不提供模型数据列表、比较器或原始数据下载。完整数据分析保留在本机。'),external('https://artificialanalysis.ai/data-api','数据与授权'))];}
  return {reset,models,refreshReset,refreshCharts,starportSnapshot:()=>({forecast,events,checkedAt,error:[forecastError,historyError].filter(Boolean).join(' ')||null}),get resetBusy(){return pending;}};
 }
