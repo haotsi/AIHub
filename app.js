@@ -1,5 +1,5 @@
 globalThis.HUB_READING_POLICY={"ranks":{"action":3,"focus":2,"normal":1,"low":0},"labels":{"action":"需要检查","focus":"值得关注","normal":"按需阅读","low":"低优先级"},"homeLimit":3,"conditionLimit":2,"highlightLimit":3};
-import {createPublicData} from './public-data.js?v=dac159bf894142ee48a7767c76f6350e8c52b832deb0eb017ba69007b14a2278';
+import {createPublicData} from './public-data.js?v=e533c768ad165efd923d222a654798a1eb0a7699a163b6a580442dd5c3da23dc';
 const main=document.querySelector('#main'),sidebar=document.querySelector('#sidebar');
 const storageKey='agent-intelligence-public-v1';
 const categories={'Model Release':'模型发布','ChatGPT Update':'ChatGPT 更新','Codex Feature':'Codex 功能','Codex CLI / SDK':'CLI / SDK','API Update':'API 更新','Pricing / Usage Limits':'价格与额度',Deprecation:'弃用迁移',Incident:'服务事件','Community Signal':'社区信号','Reset Signal':'Reset 信号'};
@@ -71,7 +71,7 @@ const constellationHost=el('div',{className:'public-constellation-host'});let co
 function wantsConstellation(){const r=route();return r.section==='updates'&&!r.id&&r.params.get('display')==='constellation';}
 function syncConstellation(){if(!wantsConstellation()||!constellationHost.isConnected||!data){constellationModule?.unmountConstellation();return;}
  if(constellationModule){const f=filters();constellationModule.mountConstellation(constellationHost,{rows:reportProjection(match(data.updates,f),route().params.get('star')).map(u=>({...u,reading:reading(u)})),sources:data.sources,filters:f,days:f.days||90,selected:/^[a-f0-9]{64}$/.test(route().params.get('star')??'')?route().params.get('star'):null,timezone:personal.timezone,change:filterChange,back:location.hash});return;}
- if(!constellationLoading)constellationLoading=import('./constellation.js?v=dac159bf894142ee48a7767c76f6350e8c52b832deb0eb017ba69007b14a2278').then(module=>{constellationModule=module;syncConstellation();}).catch(()=>{constellationLoading=null;if(constellationHost.isConnected)constellationHost.replaceChildren(empty('星图暂时不可读','可以切回文字列表，或刷新页面重试。'));});
+ if(!constellationLoading)constellationLoading=import('./constellation.js?v=e533c768ad165efd923d222a654798a1eb0a7699a163b6a580442dd5c3da23dc').then(module=>{constellationModule=module;syncConstellation();}).catch(()=>{constellationLoading=null;if(constellationHost.isConnected)constellationHost.replaceChildren(empty('星图暂时不可读','可以切回文字列表，或刷新页面重试。'));});
 }
 function updateViewSwitch(){const sky=wantsConstellation();return el('div',{className:'update-view-switch','aria-label':'更新显示方式'},el('button',{className:'button '+(!sky?'primary':''),'aria-pressed':!sky,onclick:()=>filterChange({display:null,star:null})},'文字列表'),el('button',{className:'button '+(sky?'primary':''),'aria-pressed':sky,onclick:()=>filterChange({display:'constellation',days:filters().days||90})},'星图探索'));}
 function feed(section){const f=filters();if(section==='updates'&&wantsConstellation())return [updateViewSwitch(),controls(f),reportSwitch(match(data.updates,f),reportProjection(match(data.updates,f))),constellationHost];const all=match(data.updates.filter(u=>section!=='saved'||personal.saved.includes(u.id)),f),important=ordered(all.filter(u=>['action','focus'].includes(reading(u).level)));const focus=f.view!=='all'&&!f.q&&section!=='saved';const projected=section==='saved'?all:reportProjection(all);const rows=focus?ordered(projected.filter(u=>['action','focus'].includes(reading(u).level))):[...projected].sort((a,b)=>String(b.publishedAt??b.fetchedAt).localeCompare(String(a.publishedAt??a.fetchedAt)));const size=focus?5:12,pages=Math.max(1,Math.ceil(rows.length/size)),page=Math.min(f.page,pages);return [
@@ -101,7 +101,7 @@ function models(){return publicData.models();}
 const starportHost=el('div',{className:'public-starport'});let starportModule=null,starportLoading=null;
 function syncStarport(){if(route().section!=='forecast'||isLocalPage()||!starportHost.isConnected){starportModule?.unmountStarport();return;}
  if(starportModule){starportModule.mountStarport(starportHost,publicData.starportSnapshot(),personal.timezone);return;}
- if(!starportLoading)starportLoading=import('./starport.js?v=dac159bf894142ee48a7767c76f6350e8c52b832deb0eb017ba69007b14a2278').then(module=>{starportModule=module;syncStarport();}).catch(()=>{starportLoading=null;if(starportHost.isConnected)starportHost.replaceChildren(el('p',{className:'callout'},'星港资源暂时不可读，请刷新页面重试。'));});
+ if(!starportLoading)starportLoading=import('./starport.js?v=e533c768ad165efd923d222a654798a1eb0a7699a163b6a580442dd5c3da23dc').then(module=>{starportModule=module;syncStarport();}).catch(()=>{starportLoading=null;if(starportHost.isConnected)starportHost.replaceChildren(el('p',{className:'callout'},'星港资源暂时不可读，请刷新页面重试。'));});
 }
 function forecast(){return [...publicData.reset(),starportHost];}
 function settings(){return el('div',{className:'panel settings-panel'},el('h2',{},'你的浏览器，你的阅读习惯。'),el('p',{},'收藏、已读、主题与时区只保存在当前浏览器，不上传，也不与本地版或其他设备同步。'),el('label',{className:'settings-label'},'显示时区',select('显示时区',personal.timezone,['Asia/Taipei','Asia/Shanghai','UTC','America/New_York','Europe/London'].map(v=>[v,v]),v=>{personal.timezone=v;save();render();})),el('p',{className:'method-note'},'此浏览器也会保存上次成功读取的公开快照，打开时先显示，再后台检查更新。清除浏览器存储会移除快照及阅读状态。首次访问或页面资源未加载时仍需联网。公开页面不需要 API Key。'));}
@@ -109,14 +109,15 @@ function isLocalPage(){return ['models','forecast'].includes(route().section)&&(
 function updateBusy(){const local=isLocalPage(),busy=local?localLoading:loading||(route().section==='forecast'&&publicData.resetBusy);main.setAttribute('aria-busy',String(busy));const button=main.querySelector('.refresh-button');if(button){button.disabled=busy;button.textContent=busy?'正在检查…':local?'检查本机缓存':route().section==='forecast'?'刷新 Reset 数据':'检查已发布快照';}for(const retry of main.querySelectorAll('[data-cache-retry]'))retry.disabled=localLoading;for(const retry of main.querySelectorAll('[data-public-retry]'))retry.disabled=loading;updatePublicStatus();}
 const homeRoot=document.querySelector('#home-root');
 let homeController,homeLoading;
+let holdHomeRender=false,homeNavigationSequence=0,homeTransition;
 function renderHome(section){
  const active=section==='home';homeRoot.hidden=!active;document.body.classList.toggle('home-active',active);
  if(!active){homeController?.dispose();homeController=undefined;return false;}
  document.title='AIHub · 看清 AI 的每一次变化';
- if(!homeController&&!homeLoading)homeLoading=import('./home.js?v=dac159bf894142ee48a7767c76f6350e8c52b832deb0eb017ba69007b14a2278').then(module=>{if(route().section==='home')homeController=module.mountHome(homeRoot);}).catch(()=>{homeRoot.querySelector('#home-status').textContent='静态标志 · 入口仍可使用';}).finally(()=>{homeLoading=undefined;});
+ if(!homeController&&!homeLoading)homeLoading=import('./home.js?v=e533c768ad165efd923d222a654798a1eb0a7699a163b6a580442dd5c3da23dc').then(module=>{if(route().section==='home')homeController=module.mountHome(homeRoot);}).catch(()=>{homeRoot.querySelector('#home-status').textContent='静态标志 · 入口仍可使用';}).finally(()=>{homeLoading=undefined;});
  return true;
 }
-function render(){const {section,id}=route(),localPage=isLocalPage();if(renderHome(section)){constellationModule?.unmountConstellation();starportModule?.unmountStarport();return;}if(!wantsConstellation())constellationModule?.unmountConstellation();if(section!=='forecast'||localPage)starportModule?.unmountStarport();document.querySelector('#navigation').replaceChildren(...Object.entries(sections).map(([key,label])=>el('a',{href:'#/'+key,className:'nav-item '+(key===section?'active':''),'aria-current':key===section?'page':null,onclick:()=>setNavigation(false)},icon(key),label,key==='saved'&&personal.saved.length?el('span',{className:'nav-count'},personal.saved.length):null)));const title=id?'更新详情':sections[section]??'页面不存在';document.title=title+' · Agent Intelligence Hub';document.querySelector('#breadcrumb-current').textContent=title;document.querySelector('#global-search').value=filters().q;
+function render(){if(holdHomeRender)return;const {section,id}=route(),localPage=isLocalPage();if(renderHome(section)){constellationModule?.unmountConstellation();starportModule?.unmountStarport();return;}if(!wantsConstellation())constellationModule?.unmountConstellation();if(section!=='forecast'||localPage)starportModule?.unmountStarport();document.querySelector('#navigation').replaceChildren(...Object.entries(sections).map(([key,label])=>el('a',{href:'#/'+key,className:'nav-item '+(key===section?'active':''),'aria-current':key===section?'page':null,onclick:()=>setNavigation(false)},icon(key),label,key==='saved'&&personal.saved.length?el('span',{className:'nav-count'},personal.saved.length):null)));const title=id?'更新详情':sections[section]??'页面不存在';document.title=title+' · Agent Intelligence Hub';document.querySelector('#breadcrumb-current').textContent=title;document.querySelector('#global-search').value=filters().q;
   const header=el('div',{className:'page-heading'},el('div',{},el('span',{className:'eyebrow'},'AGENT INTELLIGENCE HUB'),el('h1',{},title),el('p',{},descriptions[section]??'')),el('button',{className:'button refresh-button',onclick:()=>refreshAll()},'检查已发布快照'));
   if(!localPage&&error){constellationModule?.unmountConstellation();starportModule?.unmountStarport();main.replaceChildren(header,el('div',{className:'cache-recovery public-load-status','data-public-load-status':true,role:'status','aria-live':'polite'}),empty('公开快照读取失败',error),el('button',{className:'button','data-public-retry':true,disabled:loading,onclick:()=>load(false)},'重新读取快照'));updateBusy();return;}
   if(!localPage&&!data){constellationModule?.unmountConstellation();starportModule?.unmountStarport();main.replaceChildren(header,el('div',{className:'cache-recovery public-load-status','data-public-load-status':true,role:'status','aria-live':'polite'}),el('div',{className:'skeleton',role:'status','aria-label':'正在读取公开快照'}));updateBusy();return;}
@@ -235,7 +236,31 @@ document.querySelector('.skip-link').addEventListener('click',e=>{e.preventDefau
 document.querySelector('#search-form').addEventListener('submit',e=>{e.preventDefault();const q=document.querySelector('#global-search').value.trim().slice(0,200);location.hash='#/updates?view=all'+(q?'&q='+encodeURIComponent(q):'')+(wantsConstellation()?'&display=constellation&days='+(filters().days||90):'');render();});
 document.querySelector('#theme-button').addEventListener('click',()=>{personal.theme=personal.theme==='light'?'dark':'light';document.body.classList.toggle('light',personal.theme==='light');save();});
 document.querySelector('#open-navigation').addEventListener('click',()=>setNavigation(true));document.querySelector('#close-navigation').addEventListener('click',()=>setNavigation(false));document.querySelector('#nav-backdrop').addEventListener('click',()=>setNavigation(false));mobileNavigation.addEventListener('change',()=>setNavigation(false));
-window.addEventListener('hashchange',()=>{setNavigation(false);render();window.scrollTo({top:0});if(route().section!=='home'){if(!data&&!loading&&!error)void startPublicSnapshot();void loadLocal();}});
+async function navigateFromHome(){
+ const sequence=++homeNavigationSequence,wasHome=!homeRoot.hidden,isHome=route().section==='home';
+ homeTransition?.skipTransition();
+ // On the first visit retain the homepage while reading the same public
+ // snapshot that normal navigation already requests. No collection/prefetch.
+ if(wasHome&&!isHome&&!data&&!loading&&!error){
+  holdHomeRender=true;let timer;
+  await Promise.race([startPublicSnapshot(),new Promise(resolve=>{timer=setTimeout(resolve,700);})]);clearTimeout(timer);
+  if(sequence!==homeNavigationSequence)return;
+ }
+ holdHomeRender=false;
+ const update=()=>{if(sequence!==homeNavigationSequence)return;setNavigation(false);render();window.scrollTo({top:0,behavior:'instant'});if(wasHome!==isHome){const target=isHome?homeRoot.querySelector('h1'):main;if(target){if(!target.hasAttribute('tabindex'))target.tabIndex=-1;target.focus({preventScroll:true});}}};
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(wasHome!==isHome&&!reduced&&document.startViewTransition){
+  document.documentElement.classList.add('hub-page-transition');
+  const active=document.startViewTransition(update);homeTransition=active;
+  void active.finished.catch(()=>{}).finally(()=>{if(homeTransition===active){homeTransition=undefined;document.documentElement.classList.remove('hub-page-transition');}});
+  await active.updateCallbackDone.catch(()=>{});
+ }else{
+  update();
+  if(wasHome!==isHome&&!reduced){const target=isHome?homeRoot:document.querySelector('.shell');target?.animate?.([{opacity:.72,transform:'translateY(4px)'},{opacity:1,transform:'translateY(0)'}],{duration:220,easing:'cubic-bezier(.2,.65,.3,1)'});}
+ }
+ if(sequence===homeNavigationSequence&&route().section!=='home'){if(!data&&!loading&&!error)void startPublicSnapshot();void loadLocal();}
+}
+window.addEventListener('hashchange',()=>void navigateFromHome());
 window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();if(route().section==='home'){go('updates');render();}document.querySelector('#global-search').focus();}if(e.key==='Escape')setNavigation(false);if(e.key==='Tab'&&mobileNavigation.matches&&sidebar.classList.contains('open')){const items=[...sidebar.querySelectorAll('a,button')].filter(n=>n.getClientRects().length),first=items[0],last=items.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
 setNavigation(false);render();if(route().section!=='home'){void startPublicSnapshot();void loadLocal();}
 
@@ -260,7 +285,7 @@ async function loadLocal(quiet=true){
     document.querySelector('.local-pill').replaceChildren(el('span',{className:'dot ok'}),'本机静态预览');
     const response=await fetch(new URL('./local-data.json',import.meta.url),{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!response.ok)throw Error();
     const raw=await response.text();if(new TextEncoder().encode(raw).length>8*1024*1024)throw Error();
-    const next=JSON.parse(raw),module=await import('./local-preview.js?v=dac159bf894142ee48a7767c76f6350e8c52b832deb0eb017ba69007b14a2278');if(!await module.validPrivateSnapshot(next))throw Error();
+    const next=JSON.parse(raw),module=await import('./local-preview.js?v=e533c768ad165efd923d222a654798a1eb0a7699a163b6a580442dd5c3da23dc');if(!await module.validPrivateSnapshot(next))throw Error();
     const unchanged=localCache?.contentHash===next.contentHash;localModule=module;localCache=next;localError='';
     if(!quiet)toast(unchanged?'本机缓存没有变化。':'已读取本机模型与 Reset 缓存。');
   }catch{if(localMode)localError=localCache?'本机缓存检查失败，继续显示已读取的数据。':'本机缓存暂不可读，请先完成本地同步。';}

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "artifactHash": "2242a641d34414ddd41f83505c746e361064cc3a69f93f988054521c71dcc588",
+  "artifactHash": "2338001c6a814f060411b55169be8776faa2aa0625888b7f8432849f1f79939d",
   "snapshotHash": "1fe6a53336897389817e2195cee197c14154dbe76989a65849e0721eb328830a",
   "files": [
     {
@@ -30,8 +30,8 @@
     },
     {
       "file": "app.js",
-      "bytes": 49439,
-      "sha256": "6b03d2ca7c7e3ee913b06a2dbb82a8b7b69e44706238a084cfaecff4c1d28106"
+      "bytes": 51241,
+      "sha256": "4576f800b1742c34eff441c56ad046400b8e5b9a66c4e24d144ba373578be462"
     },
     {
       "file": "constellation.css",
@@ -576,17 +576,17 @@
     {
       "file": "home.js",
       "bytes": 2950,
-      "sha256": "e158cd6044ddf9c64bfe781633f5b1b53331bab10d3a1cfd47e924898016e674"
+      "sha256": "3618b9bd09ca8753f70ec0b3c38d6cecbe6d7001949c0918d326c2d0f509ccea"
     },
     {
       "file": "index.html",
       "bytes": 12585,
-      "sha256": "bf7d50ca935565e85911e2b4ce5fb2adae3abc23cc85911db43707b490cc714c"
+      "sha256": "bd432b0aeb1fcf79f7829be6ae379daadc06096d83ab3420b7ff666e9fa6d887"
     },
     {
       "file": "local-preview.js",
       "bytes": 25871,
-      "sha256": "a3cd7382c025e2612ecc4b89bbfe3a0c4d82a1b6540f7a290f004abacd38c722"
+      "sha256": "4fa9601e6e72ebe08931683c99479b31a109725eb034f5a399e9fa0468571583"
     },
     {
       "file": "model-tools.js",
@@ -610,8 +610,8 @@
     },
     {
       "file": "styles.css",
-      "bytes": 170046,
-      "sha256": "eb35e8b36ecf8fcc50d20096ac875c386aaacd91d494f7b34f6071a81c4aa81a"
+      "bytes": 170737,
+      "sha256": "5136dcb1fe0401fd86f4aee2d043307eddad9a822b3aa1d60811ab4808e52a1d"
     }
   ]
 }
