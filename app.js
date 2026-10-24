@@ -1,5 +1,5 @@
 globalThis.HUB_READING_POLICY={"ranks":{"action":3,"focus":2,"normal":1,"low":0},"labels":{"action":"需要检查","focus":"值得关注","normal":"按需阅读","low":"低优先级"},"homeLimit":3,"conditionLimit":2,"highlightLimit":3};
-import {createPublicData} from './public-data.js?v=1280d0bda101ceb86020ce2037923c5ea2919deb1d7c18c2e1133c60d5f6e535';
+import {createPublicData} from './public-data.js?v=dac159bf894142ee48a7767c76f6350e8c52b832deb0eb017ba69007b14a2278';
 const main=document.querySelector('#main'),sidebar=document.querySelector('#sidebar');
 const storageKey='agent-intelligence-public-v1';
 const categories={'Model Release':'模型发布','ChatGPT Update':'ChatGPT 更新','Codex Feature':'Codex 功能','Codex CLI / SDK':'CLI / SDK','API Update':'API 更新','Pricing / Usage Limits':'价格与额度',Deprecation:'弃用迁移',Incident:'服务事件','Community Signal':'社区信号','Reset Signal':'Reset 信号'};
@@ -71,7 +71,7 @@ const constellationHost=el('div',{className:'public-constellation-host'});let co
 function wantsConstellation(){const r=route();return r.section==='updates'&&!r.id&&r.params.get('display')==='constellation';}
 function syncConstellation(){if(!wantsConstellation()||!constellationHost.isConnected||!data){constellationModule?.unmountConstellation();return;}
  if(constellationModule){const f=filters();constellationModule.mountConstellation(constellationHost,{rows:reportProjection(match(data.updates,f),route().params.get('star')).map(u=>({...u,reading:reading(u)})),sources:data.sources,filters:f,days:f.days||90,selected:/^[a-f0-9]{64}$/.test(route().params.get('star')??'')?route().params.get('star'):null,timezone:personal.timezone,change:filterChange,back:location.hash});return;}
- if(!constellationLoading)constellationLoading=import('./constellation.js?v=1280d0bda101ceb86020ce2037923c5ea2919deb1d7c18c2e1133c60d5f6e535').then(module=>{constellationModule=module;syncConstellation();}).catch(()=>{constellationLoading=null;if(constellationHost.isConnected)constellationHost.replaceChildren(empty('星图暂时不可读','可以切回文字列表，或刷新页面重试。'));});
+ if(!constellationLoading)constellationLoading=import('./constellation.js?v=dac159bf894142ee48a7767c76f6350e8c52b832deb0eb017ba69007b14a2278').then(module=>{constellationModule=module;syncConstellation();}).catch(()=>{constellationLoading=null;if(constellationHost.isConnected)constellationHost.replaceChildren(empty('星图暂时不可读','可以切回文字列表，或刷新页面重试。'));});
 }
 function updateViewSwitch(){const sky=wantsConstellation();return el('div',{className:'update-view-switch','aria-label':'更新显示方式'},el('button',{className:'button '+(!sky?'primary':''),'aria-pressed':!sky,onclick:()=>filterChange({display:null,star:null})},'文字列表'),el('button',{className:'button '+(sky?'primary':''),'aria-pressed':sky,onclick:()=>filterChange({display:'constellation',days:filters().days||90})},'星图探索'));}
 function feed(section){const f=filters();if(section==='updates'&&wantsConstellation())return [updateViewSwitch(),controls(f),reportSwitch(match(data.updates,f),reportProjection(match(data.updates,f))),constellationHost];const all=match(data.updates.filter(u=>section!=='saved'||personal.saved.includes(u.id)),f),important=ordered(all.filter(u=>['action','focus'].includes(reading(u).level)));const focus=f.view!=='all'&&!f.q&&section!=='saved';const projected=section==='saved'?all:reportProjection(all);const rows=focus?ordered(projected.filter(u=>['action','focus'].includes(reading(u).level))):[...projected].sort((a,b)=>String(b.publishedAt??b.fetchedAt).localeCompare(String(a.publishedAt??a.fetchedAt)));const size=focus?5:12,pages=Math.max(1,Math.ceil(rows.length/size)),page=Math.min(f.page,pages);return [
@@ -101,7 +101,7 @@ function models(){return publicData.models();}
 const starportHost=el('div',{className:'public-starport'});let starportModule=null,starportLoading=null;
 function syncStarport(){if(route().section!=='forecast'||isLocalPage()||!starportHost.isConnected){starportModule?.unmountStarport();return;}
  if(starportModule){starportModule.mountStarport(starportHost,publicData.starportSnapshot(),personal.timezone);return;}
- if(!starportLoading)starportLoading=import('./starport.js?v=1280d0bda101ceb86020ce2037923c5ea2919deb1d7c18c2e1133c60d5f6e535').then(module=>{starportModule=module;syncStarport();}).catch(()=>{starportLoading=null;if(starportHost.isConnected)starportHost.replaceChildren(el('p',{className:'callout'},'星港资源暂时不可读，请刷新页面重试。'));});
+ if(!starportLoading)starportLoading=import('./starport.js?v=dac159bf894142ee48a7767c76f6350e8c52b832deb0eb017ba69007b14a2278').then(module=>{starportModule=module;syncStarport();}).catch(()=>{starportLoading=null;if(starportHost.isConnected)starportHost.replaceChildren(el('p',{className:'callout'},'星港资源暂时不可读，请刷新页面重试。'));});
 }
 function forecast(){return [...publicData.reset(),starportHost];}
 function settings(){return el('div',{className:'panel settings-panel'},el('h2',{},'你的浏览器，你的阅读习惯。'),el('p',{},'收藏、已读、主题与时区只保存在当前浏览器，不上传，也不与本地版或其他设备同步。'),el('label',{className:'settings-label'},'显示时区',select('显示时区',personal.timezone,['Asia/Taipei','Asia/Shanghai','UTC','America/New_York','Europe/London'].map(v=>[v,v]),v=>{personal.timezone=v;save();render();})),el('p',{className:'method-note'},'此浏览器也会保存上次成功读取的公开快照，打开时先显示，再后台检查更新。清除浏览器存储会移除快照及阅读状态。首次访问或页面资源未加载时仍需联网。公开页面不需要 API Key。'));}
@@ -113,7 +113,7 @@ function renderHome(section){
  const active=section==='home';homeRoot.hidden=!active;document.body.classList.toggle('home-active',active);
  if(!active){homeController?.dispose();homeController=undefined;return false;}
  document.title='AIHub · 看清 AI 的每一次变化';
- if(!homeController&&!homeLoading)homeLoading=import('./home.js?v=1280d0bda101ceb86020ce2037923c5ea2919deb1d7c18c2e1133c60d5f6e535').then(module=>{if(route().section==='home')homeController=module.mountHome(homeRoot);}).catch(()=>{homeRoot.querySelector('#home-status').textContent='静态标志 · 入口仍可使用';}).finally(()=>{homeLoading=undefined;});
+ if(!homeController&&!homeLoading)homeLoading=import('./home.js?v=dac159bf894142ee48a7767c76f6350e8c52b832deb0eb017ba69007b14a2278').then(module=>{if(route().section==='home')homeController=module.mountHome(homeRoot);}).catch(()=>{homeRoot.querySelector('#home-status').textContent='静态标志 · 入口仍可使用';}).finally(()=>{homeLoading=undefined;});
  return true;
 }
 function render(){const {section,id}=route(),localPage=isLocalPage();if(renderHome(section)){constellationModule?.unmountConstellation();starportModule?.unmountStarport();return;}if(!wantsConstellation())constellationModule?.unmountConstellation();if(section!=='forecast'||localPage)starportModule?.unmountStarport();document.querySelector('#navigation').replaceChildren(...Object.entries(sections).map(([key,label])=>el('a',{href:'#/'+key,className:'nav-item '+(key===section?'active':''),'aria-current':key===section?'page':null,onclick:()=>setNavigation(false)},icon(key),label,key==='saved'&&personal.saved.length?el('span',{className:'nav-count'},personal.saved.length):null)));const title=id?'更新详情':sections[section]??'页面不存在';document.title=title+' · Agent Intelligence Hub';document.querySelector('#breadcrumb-current').textContent=title;document.querySelector('#global-search').value=filters().q;
@@ -260,7 +260,7 @@ async function loadLocal(quiet=true){
     document.querySelector('.local-pill').replaceChildren(el('span',{className:'dot ok'}),'本机静态预览');
     const response=await fetch(new URL('./local-data.json',import.meta.url),{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!response.ok)throw Error();
     const raw=await response.text();if(new TextEncoder().encode(raw).length>8*1024*1024)throw Error();
-    const next=JSON.parse(raw),module=await import('./local-preview.js?v=1280d0bda101ceb86020ce2037923c5ea2919deb1d7c18c2e1133c60d5f6e535');if(!await module.validPrivateSnapshot(next))throw Error();
+    const next=JSON.parse(raw),module=await import('./local-preview.js?v=dac159bf894142ee48a7767c76f6350e8c52b832deb0eb017ba69007b14a2278');if(!await module.validPrivateSnapshot(next))throw Error();
     const unchanged=localCache?.contentHash===next.contentHash;localModule=module;localCache=next;localError='';
     if(!quiet)toast(unchanged?'本机缓存没有变化。':'已读取本机模型与 Reset 缓存。');
   }catch{if(localMode)localError=localCache?'本机缓存检查失败，继续显示已读取的数据。':'本机缓存暂不可读，请先完成本地同步。';}
