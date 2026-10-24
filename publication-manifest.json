@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "artifactHash": "69e60125b9b37465921dac6ebac75838f5c0662bd7b50af751bb173e70dc1693",
+  "artifactHash": "e6dbcb08d8de47f0b860509e6b5b637614a5870f087384486c3be3ee25850280",
   "snapshotHash": "1fe6a53336897389817e2195cee197c14154dbe76989a65849e0721eb328830a",
   "files": [
     {
@@ -30,8 +30,8 @@
     },
     {
       "file": "app.js",
-      "bytes": 51241,
-      "sha256": "64d69fbe25b38dde59de22595cb76c9a060a1d39747ff224d7128b1e35b35183"
+      "bytes": 51147,
+      "sha256": "a6702de64eff7c50e501248d0c6f226c8735f174aa19e3972c607b9f801e7352"
     },
     {
       "file": "constellation.css",
@@ -565,8 +565,8 @@
     },
     {
       "file": "home-model.js",
-      "bytes": 616497,
-      "sha256": "58b379584d589daa07e19eb2ad6dd656baffd8840d37c3fe4078a052c77207bb"
+      "bytes": 616621,
+      "sha256": "93667d9544b61c5e5afdef1229ce4f8598334eb74a313f42a9aeb26d3386dadc"
     },
     {
       "file": "home.css",
@@ -575,18 +575,18 @@
     },
     {
       "file": "home.js",
-      "bytes": 2950,
-      "sha256": "d9c467748f7d2fa3d674e09cb45330a797a472456774a4ceb275c0bb19934334"
+      "bytes": 2949,
+      "sha256": "7c509fd9e92348f9e2c0f79da2c32798aba93f6ce0bd31396fa191a7a7cc650d"
     },
     {
       "file": "index.html",
-      "bytes": 12585,
-      "sha256": "5f6b035a137e53ab4c2a59ce907d32e0ce52456639aaf2f74d1d3c4e66bbbe2e"
+      "bytes": 12378,
+      "sha256": "65e51aa6465527e4929c595c15858b78019be1d40e6a418742740f9ccf309b04"
     },
     {
       "file": "local-preview.js",
       "bytes": 25871,
-      "sha256": "2730c6de295a2d7e26d19fc1de985ef716f18f6e4cd55ee4aa65806eb05da51a"
+      "sha256": "6080ccb0e4cee7505c620e8f242559afc8b8cc17a6e57db4772f2dac6f22167a"
     },
     {
       "file": "model-tools.js",
@@ -595,8 +595,8 @@
     },
     {
       "file": "public-data.js",
-      "bytes": 15696,
-      "sha256": "c5c76bed1067da7af74bdb4b2a7a6ccf8b2ab593fc7580352f560398d4fdf5e5"
+      "bytes": 15678,
+      "sha256": "9bed04c81001bfd8fb39c56509dd99a23bc19dfcd39e8115a0ddb483ff76e5e5"
     },
     {
       "file": "starport.css",
@@ -610,8 +610,8 @@
     },
     {
       "file": "styles.css",
-      "bytes": 174243,
-      "sha256": "f602a3e8d08fa935a8968dfc6d7c9e4f16c374fa332672da7b1f10b36129a9e5"
+      "bytes": 176248,
+      "sha256": "579c8770fe064382b06b42fd3a2a3f3b86c9ce347bf923fd310f58f76bb5f7b2"
     }
   ]
 }

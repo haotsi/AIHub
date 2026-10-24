@@ -852,37 +852,37 @@
 
 /* Shared visual system. System fonts stay local; no remote font or tracking request. */
 :root {
-  --bg: #111113;
-  --panel: #1b1b1e;
-  --panel2: #252528;
-  --border: #353539;
-  --text: #f5f5f7;
-  --muted: #a1a1a8;
-  --accent: #85baff;
-  --blue: #85baff;
+  --bg: #0c1011;
+  --panel: #121819;
+  --panel2: #1c2423;
+  --border: #2c3835;
+  --text: #e9ece7;
+  --muted: #a1ada6;
+  --accent: #b8cfc0;
+  --blue: #b8cfc0;
   --green: #8cccab;
   --amber: #e8c08a;
-  --side: #171719;
-  --glass: #171719e8;
-  --soft-blue: #85baff12;
-  --shadow: 0 4px 24px #00000012;
+  --side: #0c1011;
+  --glass: #0c1011ed;
+  --soft-blue: #b8cfc012;
+  --shadow: none;
   --font-ui: "Hub Sans", -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", "Microsoft YaHei", sans-serif;
 }
 body.light {
-  --bg: #f5f5f7;
-  --panel: #ffffff;
-  --panel2: #efeff2;
-  --border: #e4e4e8;
-  --text: #1d1d1f;
-  --muted: #66666e;
-  --accent: #0066cc;
-  --blue: #0066cc;
+  --bg: #f4f5f0;
+  --panel: #fafbf7;
+  --panel2: #e9ede5;
+  --border: #dce1d8;
+  --text: #1d2923;
+  --muted: #657168;
+  --accent: #345b45;
+  --blue: #345b45;
   --green: #237451;
   --amber: #92601d;
-  --side: #efeff2;
-  --glass: #f5f5f7e8;
-  --soft-blue: #0066cc07;
-  --shadow: 0 4px 24px #00000004;
+  --side: #f4f5f0;
+  --glass: #f4f5f0ed;
+  --soft-blue: #345b4509;
+  --shadow: none;
 }
 body {
   font-family: var(--font-ui);
@@ -1402,3 +1402,29 @@ html.hub-page-transition::view-transition-new(root){animation:hub-view-in 220ms 
 @media(prefers-reduced-motion:reduce){
  html.hub-page-transition::view-transition-group(root),html.hub-page-transition::view-transition-old(root),html.hub-page-transition::view-transition-new(root){animation:none!important}
 }
+
+/* Carry the homepage's typography and restrained surfaces into the workbench. */
+.shell .brand > strong { font-size:22px; font-weight:500; letter-spacing:-.9px; }
+.shell .sidebar { border-right-color:var(--border); }
+.shell .nav-item.active { background:var(--soft-blue); box-shadow:none; font-weight:500; }
+.shell .nav-item.active svg { color:var(--text); }
+.shell .page-heading h1 { font-weight:450; letter-spacing:-1.1px; }
+.shell .page-heading > div > .eyebrow { font-weight:450; letter-spacing:1.1px; }
+.shell .section-heading h2, .shell .panel h2, .shell .panel h3 { font-weight:500; }
+.shell .panel, .shell .metric, .shell .table-wrap { box-shadow:none; border-radius:12px; }
+.shell .button.primary { background:var(--accent); border-color:var(--accent); color:var(--bg); box-shadow:none; }
+.shell .button.primary:hover { background:var(--text); border-color:var(--text); }
+.shell .topbar { background:var(--glass); }
+.shell .searchbox { background:transparent; border-bottom:1px solid var(--border); border-radius:0; padding-inline:2px; }
+.shell .page-heading { margin-bottom:22px; }
+.shell .public-snapshot-strip { margin-bottom:32px; }
+.shell .public-update { border-radius:12px; }
+.shell .public-update .update-title { font-weight:500; }
+.shell .footer { color:var(--muted); }
+.public-model-intro { display:flex; align-items:center; flex-wrap:wrap; gap:16px 28px; margin:0 0 28px; }
+.public-model-intro > p { margin:0; }
+.aa-chart-shortcuts { display:flex; gap:8px; flex-wrap:wrap; }
+.aa-chart-shortcuts .button { background:transparent; border-color:var(--border); }
+.public-model-intro > .pill { font-size:11px; }
+@media(min-width:901px){.shell .content{padding-top:52px}.shell .page-heading h1{font-size:36px}}
+@media(max-width:680px){.public-model-intro{align-items:flex-start;flex-direction:column;gap:14px}.aa-chart-shortcuts{gap:6px}.aa-chart-shortcuts .button{min-height:44px;font-size:11px;padding-inline:10px}.shell .page-heading h1{font-size:29px}.shell .brand > strong{font-size:21px}}
