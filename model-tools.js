@@ -1,4 +1,4 @@
-// Shared local model algorithms 44e49a566943b842ed411b02e51fbe4ac733ed32c3d618197d91f0a81452efaf
+// Shared local model algorithms 46c647ab31dbc2d24846f847157c47b8143a69324320809d0c2b8a4ada73ded6
 const __comparison=(()=>{
 // AA exposes major.minor, not patch or the full measurement configuration.
 function indexVersion(value) {
@@ -284,3 +284,39 @@ function rankingPanels(models, metric = 'intelligence', version = '', limit = 6,
 
 return {modelRanking,rankingPanels,recentRankingModels};})();
 export const {modelRanking,rankingPanels,recentRankingModels}=__ranking;
+const __student_guidance=(()=>{
+/** Editorial examples only. No model prices, scores, keys or personal state. */
+const studentModelCheckedAt = '2026-10-25';
+const studentModelTasks = [
+    { label: '调试课程代码', task: '复杂 Debug', note: '先准备最小输入、报错和预期，再比较能否定位原因与通过相关检查。' },
+    { label: '审查科研代码', task: '代码审查', note: '重点检查数据划分、指标计算与可复现步骤；榜单分数不能证明实验结论正确。' },
+    { label: '整理课程资料', task: '文档处理', note: '用自己熟悉的一页资料核对提取、摘要和引用；长文档能力需实际验证。' },
+    { label: '批量试跑实验', task: '大规模重复任务', note: '先用少量样本检查格式、失败和耗时，再估算全部请求与重试的费用。' },
+];
+const hints = {
+    '简单代码修改': '适合边界清楚的小改动。先写完成条件，检查改动差异及原有行为。',
+    '架构设计': '适合课程设计方案讨论。写清约束、模块接口和取舍，再用最小原型验证。',
+    '前端开发': '适合课程网站或交互原型。除了代码，还要核对手机布局、键盘操作和实际流程。',
+    'Blender / 3D 自动化': '适合建模脚本或场景操作试验。先用小场景验证；本站没有专门的3D任务基准。',
+};
+function studentTaskHint(task) { return studentModelTasks.find(s => s.task === task)?.note ?? hints[task] ?? null; }
+const studentModelMethod = '沿用已有任务与权重，使用提示由本站整理。Coding / Agentic 等指数只是参考，不是课程任务、论文质量或实验复现的实测成绩。';
+const studentCostExamples = [
+    { id: 'code-question', label: '代码问答', input: 2000, output: 1000, runs: 1 },
+    { id: 'document-trial', label: '文档试跑', input: 6000, output: 1000, runs: 10 },
+    { id: 'evaluation-trial', label: '评测集试跑', input: 1500, output: 500, runs: 50 },
+];
+const studentCostMethod = '按每次请求填写输入与输出 Token；运行次数填写实际请求数。同一任务的多轮对话、工具循环或重试可能产生更多请求，应按实际用量另计。';
+const studentCostLimit = '用量示例是人为设定，不代表平均消耗。估算沿用当前价格数据；缺价仍显示 N/A。API 按量费用与 ChatGPT / Codex 订阅额度分开，工具、存储和其他附加费用需单独核对。';
+const studentPricingLinks = [
+    { label: 'OpenAI API 费用口径', url: 'https://developers.openai.com/api/docs/pricing' },
+    { label: 'ChatGPT / Codex 用量说明', url: 'https://learn.chatgpt.com/docs/pricing' },
+];
+/** Return only editable workload fields; model, price and ranking stay untouched. */
+function studentCostExampleValues(id) {
+    const example = studentCostExamples.find(e => e.id === id);
+    return example ? { input: example.input, output: example.output, runs: example.runs, cache: 0, write: 0 } : null;
+}
+
+return {studentModelCheckedAt,studentModelTasks,studentTaskHint,studentModelMethod,studentCostExamples,studentCostMethod,studentCostLimit,studentPricingLinks,studentCostExampleValues};})();
+export const {studentModelCheckedAt,studentModelTasks,studentTaskHint,studentModelMethod,studentCostExamples,studentCostMethod,studentCostLimit,studentPricingLinks,studentCostExampleValues}=__student_guidance;
