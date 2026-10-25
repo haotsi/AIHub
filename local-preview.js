@@ -1,4 +1,4 @@
-import {filterModels,comparisonBasis,indexVersion,chartAnalysis,DEFAULT_VALUE_MIN_SCORE,estimateCost,rankingPanels} from './model-tools.js?v=c13d6f0f23b3a56cb1fde504155de1b9d6bd47134045f951b860362717bc3776';
+import {filterModels,comparisonBasis,indexVersion,chartAnalysis,DEFAULT_VALUE_MIN_SCORE,estimateCost,rankingPanels} from './model-tools.js?v=574d10b629abe998d83c65dace2d7bf9ab250b4c76459664c1d9d6c5ecdb9a72';
 
 const state={query:'',queryDraft:'',creator:'',version:'',sort:'intelligence',mode:'list',page:1,compare:[],selectionOpen:false,minimum:DEFAULT_VALUE_MIN_SCORE,share:50,costModel:'',input:100000,output:10000,runs:1,cache:0,historyPage:1,historyKind:'global_reset',rankingMetric:'intelligence',rankingVersion:'',rankingLimit:6};
 const metrics={intelligence:'综合能力',coding:'Coding',agentic:'Agentic',math:'数学',inputPrice:'输入 $/百万',outputPrice:'输出 $/百万',speed:'输出 Token/s',latency:'首字延迟 s'};

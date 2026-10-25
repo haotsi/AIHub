@@ -1598,6 +1598,30 @@ html.hub-page-transition::view-transition-new(root){animation:hub-view-in 220ms 
 .change-comparison dl>div { border-bottom:1px solid var(--border); padding-bottom:20px; min-width:0; }
 .change-comparison dt { color:var(--muted); font-size:12px; margin-bottom:12px; }
 .change-comparison dd { font-size:30px; font-weight:450; margin:0; letter-spacing:-.6px; overflow-wrap:anywhere; }
+.student-reading,.student-topic-guides { margin:32px 0; max-width:850px; }
+.student-perspective,.student-guide { border-top:1px solid var(--border); min-width:0; }
+.student-perspective>summary,.student-guide>summary,.topic-center .student-guide>summary { display:flex; align-items:baseline; gap:18px; padding:22px 0; width:100%; cursor:pointer; color:var(--text); list-style:disclosure-closed; }
+.student-perspective>summary>span,.student-guide>summary>span { color:var(--muted); font-size:12px; flex-shrink:0; }
+.student-perspective>summary>strong,.student-guide>summary>strong { font-size:16px; font-weight:450; line-height:1.8; overflow-wrap:anywhere; }
+.student-perspective>summary::after,.student-guide>summary::after { content:'+'; margin-left:auto; color:var(--muted); }
+.student-perspective[open]>summary::after,.student-guide[open]>summary::after { content:'−'; }
+.student-perspective>summary::-webkit-details-marker,.student-guide>summary::-webkit-details-marker { display:none; }
+.student-note-body,.student-guide-body { max-width:740px; padding:0 0 22px; font-size:15px; line-height:1.9; overflow-wrap:anywhere; }
+.student-note-body h3 { font-size:14px; font-weight:500; margin:26px 0 9px; }
+.student-note-body p,.student-guide-body p { margin:12px 0; }
+.student-note-body .student-meta,.student-guide-body .student-meta { font-size:12px; color:var(--muted); }
+.student-fact { color:var(--muted); }
+.student-guide-body ol { padding-left:24px; margin:22px 0; }
+.student-guide-body li { padding-left:5px; margin:14px 0; }
+.student-links { font-size:13px; margin-top:22px!important; }
+.student-related { display:inline-block; font-size:12px; margin:0 0 24px; }
+.student-template>summary { cursor:pointer; color:var(--muted); padding:12px 0; font-size:13px; }
+.student-template pre { white-space:pre-wrap; overflow-wrap:anywhere; font:inherit; font-size:13px; padding:16px; border-left:2px solid var(--border); background:transparent; }
+@media(max-width:760px){
+ .student-perspective>summary,.student-guide>summary,.topic-center .student-guide>summary { flex-wrap:wrap; gap:6px 14px; }
+ .student-perspective>summary>strong,.student-guide>summary>strong { flex:1; min-width:0; font-size:15px; }
+ .student-note-body,.student-guide-body { font-size:14px; }
+}
 @media(max-width:760px){
  .topic-directory,.topic-reading-grid { grid-template-columns:minmax(0,1fr); gap:30px; }
  .topic-directory { margin-top:28px; }
