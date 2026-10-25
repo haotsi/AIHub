@@ -1,12 +1,14 @@
 globalThis.HUB_READING_POLICY={"ranks":{"action":3,"focus":2,"normal":1,"low":0},"labels":{"action":"需要检查","focus":"值得关注","normal":"按需阅读","low":"低优先级"},"homeLimit":3,"conditionLimit":2,"highlightLimit":3};
-import {createPublicData} from './public-data.js?v=1015cbfdfdf9edac4ceb0b735f9d77b79045a7e83a354b077ade12d815349249';
+import {createPublicData} from './public-data.js?v=e3cbbca6b16690dff681f8e2f3d01e8204744c4cc8cb18730027c1fab94949f6';
 const main=document.querySelector('#main'),sidebar=document.querySelector('#sidebar');
 const storageKey='agent-intelligence-public-v1';
 const categories={'Model Release':'模型发布','ChatGPT Update':'ChatGPT 更新','Codex Feature':'Codex 功能','Codex CLI / SDK':'CLI / SDK','API Update':'API 更新','Pricing / Usage Limits':'价格与额度',Deprecation:'弃用迁移',Incident:'服务事件','Community Signal':'社区信号','Reset Signal':'Reset 信号'};
-const sections={dashboard:'情报总览',updates:'更新情报',weekly:'每周回顾',models:'模型中心',forecast:'Reset 观察',saved:'我的收藏',sources:'数据与来源',settings:'偏好设置'};
-const descriptions={dashboard:'重要变化，先看这三件事。',updates:'先理解变化，再决定是否行动。',weekly:'把一周的变化，整理成少量值得记住的事。',models:'能力、速度与成本。',forecast:'查看可信来源，保留预测边界。',saved:'留给以后认真读的内容。',sources:'数据的来处，和它此刻的状态。',settings:'为当前浏览器设置阅读习惯。'};
+const sections={dashboard:'近期关注',updates:'更新情报',weekly:'每周回顾',models:'模型中心',forecast:'Reset 观察',saved:'我的收藏',sources:'数据与来源',settings:'偏好设置'};
+const descriptions={dashboard:'近15天发生，或在近15天产生影响',updates:'重点、历史与完整时间线',weekly:'把一周的变化，整理成少量值得记住的事。',models:'能力、速度与成本。',forecast:'查看可信来源，保留预测边界。',saved:'留给以后认真读的内容。',sources:'数据的来处，和它此刻的状态。',settings:'为当前浏览器设置阅读习惯。'};
 const paths={dashboard:'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',updates:'M5 4h14v16H5z M8 8h8 M8 12h8 M8 16h5',weekly:'M4 5h16v15H4z M8 3v4 M16 3v4 M4 10h16 M8 14h3',models:'M12 3l9 5-9 5-9-5z M3 12l9 5 9-5 M3 16l9 5 9-5',forecast:'M3 12h4l3-7 4 14 3-7h4',saved:'M6 3h12v18l-6-4-6 4z',sources:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18 M3 12h18 M12 3c-5 6-5 12 0 18 M12 3c5 6 5 12 0 18',settings:'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8 M12 3v2 M12 19v2 M3 12h2 M19 12h2 M5.6 5.6L7 7 M17 17l1.4 1.4 M5.6 18.4L7 17 M17 7l1.4-1.4'};
 let data,error='',loading=false,weekOffset=0,toastTimer;
+const readingPositions=new Map();let renderedAddress=location.hash||'#/';
+if('scrollRestoration' in history)history.scrollRestoration='manual';
 const snapshotCacheKey='agent-intelligence-snapshot-v1:'+new URL('.',import.meta.url).pathname;
 const maxSnapshotBytes=8*1024*1024,maxStoredSnapshotBytes=2*1024*1024;
 let snapshotFromCache=false,snapshotSavedAt=null,publicIssue=null,cacheNote='',loadAttempt=0,lastPublicCheck=null,nextAutomaticCheck=0;
@@ -47,45 +49,69 @@ function reportProjection(rows,selected=null){
   return rows.filter(u=>byId.has(u.id)).map(u=>byId.get(u.id));
 }
 function reportSwitch(rows,shown){return el('div',{className:'cache-recovery'},el('span',{},route().params.get('reports')==='all'?'当前显示全部报道；各来源记录独立保留。':shown.length<rows.length?`已折叠 ${rows.length-shown.length} 条重复报道 · 各来源记录保留`:'重复报道按严格规则折叠；仅标题相近的消息保留独立展示。'),el('button',{className:'button','aria-pressed':route().params.get('reports')==='all',onclick:()=>filterChange({reports:route().params.get('reports')==='all'?null:'all',star:null})},route().params.get('reports')==='all'?'折叠重复报道':'展开全部报道'));}
-function reportPeers(row){return row.reportPeers?.length?el('details',{className:'card-advice'},el('summary',{},`另有 ${row.reportPeers.length} 条报道 · 查看来源与差异`),el('p',{},'依据同产品、同日、同渠道、共同公告页面与等价标题折叠；各记录独立保留。'),row.reportPeers.map(peer=>el('p',{},el('a',{className:'link',href:'#/updates/'+peer.id},peer.title+' · '+sourceName(peer)),el('small',{},' · '+(peer.sourceType==='official'?'官方':peer.sourceType==='first-party'?'人物公开言论':'第三方转述')+' · '+date(peer.publishedAt,peer.datePrecision))))):null;}
+function reportPeers(row){return row.reportPeers?.length?el('details',{className:'card-advice'},el('summary',{},`另有 ${row.reportPeers.length} 条报道 · 查看来源与差异`),el('p',{},'依据同产品、同日、同渠道、共同公告页面与等价标题折叠；各记录独立保留。'),row.reportPeers.map(peer=>el('p',{},el('a',{className:'link',href:detailHref(peer.id)},peer.title+' · '+sourceName(peer)),el('small',{},' · '+(peer.sourceType==='official'?'官方':peer.sourceType==='first-party'?'人物公开言论':'第三方转述')+' · '+date(peer.publishedAt,peer.datePrecision))))):null;}
 function toggle(kind,id){personal[kind]=personal[kind].includes(id)?personal[kind].filter(v=>v!==id):[...personal[kind],id].slice(-2000);save();render();}
 function empty(title,text,href=null,label='浏览全部更新'){return el('div',{className:'empty'},el('span',{className:'empty-mark','aria-hidden':'true'},'○'),el('h3',{},title),el('p',{},text),href?el('a',{href,className:'button'},label):null);}
+// Same fifteen-day publication/confirmed schedule window as the constellation.
+function recentAttention(u,now=Date.now()){
+ const published=u.publishedAt?Date.parse(u.publishedAt):NaN,age=Number.isFinite(published)&&published<=now?Math.floor((now-published)/86400000):null;
+ const effective=reading(u).effectiveDate;
+ const parsed=u.sourceType==='official'&&['source-verified','human-reviewed'].includes(u.verification)&&/^20\d{2}-\d{2}-\d{2}$/.test(effective??'')?Date.parse(effective+'T00:00:00Z'):NaN;
+ const impact=Number.isFinite(parsed)&&new Date(parsed).toISOString().slice(0,10)===effective?Math.round((parsed-Math.floor(now/86400000)*86400000)/86400000):null;
+ const scheduled=impact!==null&&Math.abs(impact)<=15,current=age!==null&&(age<15||scheduled);
+ return {current,age,impact,scheduled,label:current?(scheduled?'影响日期 '+effective:age<7?'近7天':'近15天'):age===null?'日期待核对':'历史记录',note:current&&scheduled?'原文计划影响日期：'+effective+'；实际实施状态请核对来源。':null};
+}
+function readingBack(value){
+ if(typeof value!=='string'||value.length>3000||/[\\\u0000-\u0020]/.test(value))return '#/updates';
+ if(['#/dashboard','#/weekly','#/saved','#/updates'].includes(value))return value;
+ if(!/^#\/(?:updates|saved)\?[^#]*$/.test(value))return '#/updates';
+ const p=new URL(value.slice(1),location.origin).searchParams;
+ const allowed=['q','product','source','category','priority','unread','page','view','days','display','reports','star'];
+ return [...p.keys()].every(key=>allowed.includes(key)&&p.getAll(key).length===1)?value:'#/updates';
+}
+function detailHref(id){return '#/updates/'+id+'?'+new URLSearchParams({back:readingBack(location.hash)});}
 function sourceName(u){return data.sources.find(s=>s.id===u.evidence[0]?.sourceId)?.name??'官方来源';}
 function card(u,lead=false){const p=reading(u),saved=personal.saved.includes(u.id),read=personal.read.includes(u.id);return el('article',{className:'update-card public-update '+(lead?'lead-update ':'')+(read?'read-card':''),'aria-label':u.title},
-  el('div',{className:'update-meta'},el('span',{className:'product-label'},u.product),el('span',{className:'reading-tag '+p.level},readingPolicy.labels[p.level]),['prerelease','beta'].includes(u.channel)?el('span',{className:'pill amber'},u.channel==='beta'?'Beta':'预发布'):null,el('time',{datetime:u.publishedAt??''},date(u.publishedAt,u.datePrecision))),
-  el('a',{href:'#/updates/'+u.id,className:'update-title'},p.headline),
+  el('div',{className:'update-meta'},el('span',{className:'product-label'},u.product),el('span',{className:'reading-tag '+p.level},['action','focus'].includes(p.level)?readingPolicy.labels[p.level]+' · '+recentAttention(u).label:readingPolicy.labels[p.level]),['prerelease','beta'].includes(u.channel)?el('span',{className:'pill amber'},u.channel==='beta'?'Beta':'预发布'):null,el('time',{datetime:u.publishedAt??''},date(u.publishedAt,u.datePrecision))),
+  el('a',{href:detailHref(u.id),className:'update-title'},p.headline),
   p.essentials.length?el('ul',{className:'public-essentials'},p.essentials.map(s=>el('li',{},s))):null,
-  el('div',{className:'card-end'},el('span',{className:'source-signature'},el('span',{className:'source-seal','aria-hidden':'true'},u.sourceType&&u.sourceType!=='official'?'↗':'✓'),sourceName(u),u.sourceType&&u.sourceType!=='official'?' · '+(u.sourceType==='first-party'?'公开言论':'第三方转述'):''),el('div',{className:'mini-actions'},el('button',{className:'icon-button '+(saved?'is-saved':''),'aria-label':saved?'取消收藏':'收藏更新',onclick:()=>toggle('saved',u.id)},saved?'★':'☆'),el('button',{className:'icon-button','aria-label':read?'标记未读':'标记已读',onclick:()=>toggle('read',u.id)},read?'✓✓':'✓'))),
+  recentAttention(u).note?el('p',{className:'editorial-time-note'},recentAttention(u).note):null,el('div',{className:'card-end'},el('span',{className:'source-signature'},el('span',{className:'source-seal','aria-hidden':'true'},u.sourceType&&u.sourceType!=='official'?'↗':'✓'),sourceName(u),u.sourceType&&u.sourceType!=='official'?' · '+(u.sourceType==='first-party'?'公开言论':'第三方转述'):''),el('div',{className:'mini-actions'},el('button',{className:'icon-button '+(saved?'is-saved':''),'aria-label':saved?'取消收藏':'收藏更新',onclick:()=>toggle('saved',u.id)},saved?'★':'☆'),el('button',{className:'icon-button','aria-label':read?'标记未读':'标记已读',onclick:()=>toggle('read',u.id)},read?'✓✓':'✓'))),
   reportPeers(u),el('details',{className:'card-advice'},el('summary',{},'为什么关注与建议'),el('p',{},p.reason),el('p',{},p.action)));
 }
 function sectionTitle(title,href=null,label='查看全部 →'){return el('div',{className:'section-heading'},el('h2',{},title),href?el('a',{href,className:'link'},label):null);}
-function sourceSummary(){const issues=data.sources.filter(s=>state(s).tone!=='ok');return el('div',{className:'panel source-summary'},el('span',{className:'eyebrow'},'SOURCE STATUS'),el('div',{className:'summary-title'},el('span',{className:'dot '+(issues.length?'warn':'ok')}),el('h3',{},issues.length?issues.length+' 个来源需要留意':'来源状态正常')),el('p',{},issues.length?'成功缓存继续可读，受阻来源的完整性仍需核对。':'公开快照保留原始来源和各自的检查时间。'),el('a',{href:'#/sources',className:'link'},'查看来源状态 →'));}
-function dashboard(){const now=Date.now(),recent=data.updates.filter(u=>u.publishedAt&&Date.parse(u.publishedAt)<=now&&now-Date.parse(u.publishedAt)<=7*86400000),important=ordered(reportProjection(recent.filter(u=>['action','focus'].includes(reading(u).level)))).slice(0,readingPolicy.homeLimit);return [
-  el('div',{className:'overview-stats'},[['本周更新',recent.length],['本周重点',recent.filter(u=>['action','focus'].includes(reading(u).level)).length],['公开来源',data.sources.length]].map(([label,value])=>el('div',{},el('strong',{},value),el('span',{},label)))),
-  el('div',{className:'overview-grid'},el('section',{'aria-label':'本周值得关注'},sectionTitle('本周值得关注','#/updates'),important.length?important.map((u,i)=>card(u,i===0)):empty('本周暂无重大更新','没有确认的重要变化时，不用维护记录填满重点区。','#/updates?view=all','浏览已收录更新 →')),
-    el('aside',{className:'overview-aside'},sourceSummary(),el('a',{href:'#/weekly',className:'quiet-link-card'},icon('weekly'),el('h3',{},'花几分钟，回顾这一周'),el('p',{},'三项重点，以及值得采取的下一步。'),el('span',{className:'link'},'打开每周回顾 →')),el('a',{href:'#/forecast',className:'quiet-link-card'},icon('forecast'),el('h3',{},localMode?'Reset 缓存观察':'Reset 原站观察'),el('p',{},localMode?'读取本地保存的第三方预测和历史。':'第三方预测有独立来源与时效，个人额度另行管理。'),el('span',{className:'link'},localMode?'查看缓存预测 →':'查看可信入口 →')))),
-  el('div',{className:'quiet-bottom'},el('span',{},'其余发布记录，按需查看。'),el('a',{href:'#/updates?view=all',className:'link'},'完整时间线 · '+data.updates.length+' 项 →'))];}
+function sourceSummary(){const issues=data.sources.filter(s=>state(s).tone!=='ok');return el('div',{},el('p',{className:'editorial-source-state'},el('span',{className:'dot '+(issues.length?'warn':'ok')}),issues.length?issues.length+' 个来源需要留意':'来源状态正常'),el('a',{href:'#/sources',className:'link'},'查看来源 →'));}
+function dashboard(){
+ const candidates=ordered(reportProjection(data.updates.filter(u=>recentAttention(u).current&&['action','focus'].includes(reading(u).level))));
+ const distance=u=>{const r=recentAttention(u);return Math.min(r.age??Infinity,r.scheduled?Math.abs(r.impact):Infinity);},urgent=u=>{const r=recentAttention(u);return reading(u).level==='action'&&r.scheduled&&r.impact>=0&&r.impact<=3?0:1;};
+ candidates.sort((a,b)=>urgent(a)-urgent(b)||distance(a)-distance(b));
+ const seen=new Set(),important=candidates.filter(u=>{const p=reading(u);if(!p.effectiveDate)return true;const key=[u.product,p.headline,p.effectiveDate].join('|');if(seen.has(key))return false;seen.add(key);return true;}).slice(0,readingPolicy.homeLimit),action=candidates.find(u=>reading(u).level==='action');
+ return el('div',{className:'editorial-dashboard editorial-grid'},
+  el('section',{className:'editorial-stories','aria-label':'近期重点'},important.length?important.map((u,i)=>card(u,i===0)):empty('近期暂无需要优先关注的更新','检查来源覆盖，或浏览已收录的历史情报。','#/updates'),el('div',{className:'editorial-timeline-link'},el('span',{},'完整时间线'),el('a',{href:'#/updates?view=all',className:'link'},'发布记录与维护更新 →'))),
+  el('aside',{className:'editorial-aside','aria-label':'产品与跟进'},action?el('section',{className:'editorial-action'},el('h2',{},'需要跟进'),el('a',{href:detailHref(action.id)},reading(action).headline),el('p',{},reading(action).action)):null,
+   el('section',{className:'editorial-products'},el('h2',{},'按产品阅读'),[['Codex','工作流与开发工具'],['API','模型接口与使用条件'],['ChatGPT','功能与开放范围']].map(([product,label])=>el('a',{href:'#/updates?product='+product},el('strong',{},product),el('span',{},label)))),
+   el('section',{className:'editorial-health'},el('h2',{},'来源与核查'),sourceSummary()),el('a',{href:'#/weekly',className:'editorial-week-link'},'每周回顾 ↗')));
+}
 function select(label,value,options,onchange){return el('select',{className:'field','aria-label':label,onchange:e=>onchange(e.target.value)},options.map(([v,text])=>el('option',{value:v,selected:String(v)===String(value)},text)));}
 function controls(f){return el('details',{className:'public-filters',open:!!(f.product||f.source||f.category||f.priority)},el('summary',{},'筛选与阅读偏好'),el('div',{className:'control-row'},select('产品筛选',f.product,[['','全部产品'],...['Codex','ChatGPT','API','OpenAI'].map(v=>[v,v])],v=>filterChange({product:v})),select('来源筛选',f.source,[['','全部来源'],...data.sources.map(s=>[s.id,s.name])],v=>filterChange({source:v})),select('分类筛选',f.category,[['','全部分类'],...Object.entries(categories)],v=>filterChange({category:v})),select('重要性筛选',f.priority,[[0,'全部评分'],[65,'重要'],[80,'高度重要']],v=>filterChange({priority:v})),el('label',{className:'check-label'},el('input',{type:'checkbox',checked:f.unread,onchange:e=>filterChange({unread:e.target.checked})}),'只看未读'),el('button',{className:'button',onclick:()=>{location.hash='#/'+route().section+'?view=all'+(wantsConstellation()?'&display=constellation&days=90':'');}},'清除筛选')));}
 const constellationHost=el('div',{className:'public-constellation-host'});let constellationModule=null,constellationLoading=null;
 function wantsConstellation(){const r=route();return r.section==='updates'&&!r.id&&r.params.get('display')==='constellation';}
 function syncConstellation(){if(!wantsConstellation()||!constellationHost.isConnected||!data){constellationModule?.unmountConstellation();return;}
  if(constellationModule){const f=filters();constellationModule.mountConstellation(constellationHost,{rows:reportProjection(match(data.updates,f),route().params.get('star')).map(u=>({...u,reading:reading(u)})),sources:data.sources,filters:f,days:f.days||90,selected:/^[a-f0-9]{64}$/.test(route().params.get('star')??'')?route().params.get('star'):null,timezone:personal.timezone,change:filterChange,back:location.hash});return;}
- if(!constellationLoading)constellationLoading=import('./constellation.js?v=1015cbfdfdf9edac4ceb0b735f9d77b79045a7e83a354b077ade12d815349249').then(module=>{constellationModule=module;syncConstellation();}).catch(()=>{constellationLoading=null;if(constellationHost.isConnected)constellationHost.replaceChildren(empty('星图暂时不可读','可以切回文字列表，或刷新页面重试。'));});
+ if(!constellationLoading)constellationLoading=import('./constellation.js?v=e3cbbca6b16690dff681f8e2f3d01e8204744c4cc8cb18730027c1fab94949f6').then(module=>{constellationModule=module;syncConstellation();}).catch(()=>{constellationLoading=null;if(constellationHost.isConnected)constellationHost.replaceChildren(empty('星图暂时不可读','可以切回文字列表，或刷新页面重试。'));});
 }
 function updateViewSwitch(){const sky=wantsConstellation();return el('div',{className:'update-view-switch','aria-label':'更新显示方式'},el('button',{className:'button '+(!sky?'primary':''),'aria-pressed':!sky,onclick:()=>filterChange({display:null,star:null})},'文字列表'),el('button',{className:'button '+(sky?'primary':''),'aria-pressed':sky,onclick:()=>filterChange({display:'constellation',days:filters().days||90})},'星图探索'));}
-function feed(section){const f=filters();if(section==='updates'&&wantsConstellation())return [updateViewSwitch(),controls(f),reportSwitch(match(data.updates,f),reportProjection(match(data.updates,f))),constellationHost];const all=match(data.updates.filter(u=>section!=='saved'||personal.saved.includes(u.id)),f),important=ordered(all.filter(u=>['action','focus'].includes(reading(u).level)));const focus=f.view!=='all'&&!f.q&&section!=='saved';const projected=section==='saved'?all:reportProjection(all);const rows=focus?ordered(projected.filter(u=>['action','focus'].includes(reading(u).level))):[...projected].sort((a,b)=>String(b.publishedAt??b.fetchedAt).localeCompare(String(a.publishedAt??a.fetchedAt)));const size=focus?5:12,pages=Math.max(1,Math.ceil(rows.length/size)),page=Math.min(f.page,pages);return [
+function feed(section){const f=filters();if(section==='updates'&&wantsConstellation())return [updateViewSwitch(),controls(f),reportSwitch(match(data.updates,f),reportProjection(match(data.updates,f))),constellationHost];const all=match(data.updates.filter(u=>section!=='saved'||personal.saved.includes(u.id)),f),important=ordered(all.filter(u=>['action','focus'].includes(reading(u).level)));const focus=f.view!=='all'&&!f.q&&section!=='saved';const projected=section==='saved'?all:reportProjection(all);const rows=focus?ordered(projected.filter(u=>recentAttention(u).current&&['action','focus'].includes(reading(u).level))):[...projected].sort((a,b)=>String(b.publishedAt??b.fetchedAt).localeCompare(String(a.publishedAt??a.fetchedAt)));const size=focus?5:12,pages=Math.max(1,Math.ceil(rows.length/size)),page=Math.min(f.page,pages);return [
   section==='updates'?updateViewSwitch():null,
   section!=='saved'?el('div',{className:'reading-switch','aria-label':'阅读方式'},el('button',{className:'filter '+(focus?'active':''),'aria-pressed':focus,onclick:()=>filterChange({view:'focus',q:''})},'重点优先'),el('button',{className:'filter '+(!focus?'active':''),'aria-pressed':!focus,onclick:()=>filterChange({view:'all'})},'完整时间线'),el('span',{className:'subdued'},focus?'维护与测试构建收起':'包含维护、预发布及已恢复事件'),select('文字列表时间范围',f.days,[[0,'全部时间'],[30,'近30天'],[90,'近90天'],[365,'近365天']],v=>filterChange({days:Number(v)||null}))):null,
-  controls(f),section==='saved'?null:reportSwitch(all,projected),sectionTitle(f.q?'搜索：“'+f.q+'”':section==='saved'?'已收藏的更新':focus?'值得关注的更新':'按时间浏览'),
+  controls(f),sectionTitle(f.q?'搜索：“'+f.q+'”':section==='saved'?'已收藏的更新':focus?'近期重点':'按时间浏览'),
   el('div',{className:'public-feed'},rows.length?rows.slice((page-1)*size,page*size).map(u=>card(u)):empty('没有匹配的更新',section==='saved'?'点击更新右下角的收藏按钮，稍后在这里继续阅读。':'尝试调整筛选，或打开完整时间线。')),
   rows.length>size?el('div',{className:'public-pagination'},el('button',{className:'button',disabled:page<=1,onclick:()=>filterChange({page:page-1})},'上一页'),el('span',{'aria-live':'polite'},page+' / '+pages+' · '+rows.length+' 项'),el('button',{className:'button',disabled:page>=pages,onclick:()=>filterChange({page:page+1})},'下一页')):null,
-  focus?el('div',{className:'quiet-bottom'},el('span',{},all.length-important.length+' 项维护、预发布或其他记录按需查看。'),el('a',{href:'#/updates?view=all',className:'link'},'展开完整时间线 →')):null];}
+  section==='saved'?null:reportSwitch(all,projected),focus?el('div',{className:'quiet-bottom'},el('span',{},'历史、维护与预发布按需查看。'),el('a',{href:'#/updates?view=all',className:'link'},'展开完整时间线 →')):null];}
 function detail(id){
- const candidateBack=route().params.get('back'),back=candidateBack&&/^#\/updates\?/.test(candidateBack)&&candidateBack.length<3000?candidateBack:'#/updates';
+ const back=readingBack(route().params.get('back'));
  const u=data.updates.find(r=>r.id===id);if(!u)return empty('未找到这条更新','当前快照可能未包含这条历史记录。','#/updates');const p=reading(u);
  return el('article',{className:'article update-detail public-detail'},
-  el('nav',{className:'detail-navigation','aria-label':'阅读导航'},el('a',{href:back,className:'link'},back==='#/updates'?'← 返回更新列表':'← 返回更新星图')),
+  el('nav',{className:'detail-navigation','aria-label':'阅读导航'},el('a',{href:back,className:'link'},back==='#/dashboard'?'← 返回近期关注':back==='#/weekly'?'← 返回每周回顾':back.startsWith('#/saved')?'← 返回收藏列表':new URL(back.slice(1),location.origin).searchParams.get('display')==='constellation'?'← 返回更新星图':'← 返回更新列表')),
   el('header',{className:'detail-intro'},el('div',{className:'update-meta'},el('span',{className:'product-label'},u.product),el('span',{},categories[u.category]),u.sourceType&&u.sourceType!=='official'?el('span',{className:'pill amber'},u.sourceType==='first-party'?'人物公开言论':'第三方转述'):null,el('time',{},date(u.publishedAt,u.datePrecision))),el('h1',{className:'public-detail-title'},p.headline),p.essentials.length?el('ul',{className:'public-essentials'},p.essentials.map(v=>el('li',{},v))):null),
   u.referenceUrl?el('p',{className:'callout'},'第三方聚合记录，未独立读取官方原文。',external(u.referenceUrl,'聚合方引用的原文')):null,
   el('section',{className:'decision-panel detail-next-action','aria-label':'建议操作'},el('h2',{},'建议操作'),el('p',{},p.action),el('details',{className:'detail-impact-note'},el('summary',{},'建议依据与适用条件'),el('p',{},p.reason),el('p',{},'规则建议；适用计划、平台和账户资格以原文为准。'))),
@@ -120,7 +146,7 @@ function models(){return publicData.models();}
 const starportHost=el('div',{className:'public-starport'});let starportModule=null,starportLoading=null;
 function syncStarport(){if(route().section!=='forecast'||isLocalPage()||!starportHost.isConnected){starportModule?.unmountStarport();return;}
  if(starportModule){starportModule.mountStarport(starportHost,publicData.starportSnapshot(),personal.timezone);return;}
- if(!starportLoading)starportLoading=import('./starport.js?v=1015cbfdfdf9edac4ceb0b735f9d77b79045a7e83a354b077ade12d815349249').then(module=>{starportModule=module;syncStarport();}).catch(()=>{starportLoading=null;if(starportHost.isConnected)starportHost.replaceChildren(el('p',{className:'callout'},'星港资源暂时不可读，请刷新页面重试。'));});
+ if(!starportLoading)starportLoading=import('./starport.js?v=e3cbbca6b16690dff681f8e2f3d01e8204744c4cc8cb18730027c1fab94949f6').then(module=>{starportModule=module;syncStarport();}).catch(()=>{starportLoading=null;if(starportHost.isConnected)starportHost.replaceChildren(el('p',{className:'callout'},'星港资源暂时不可读，请刷新页面重试。'));});
 }
 function forecast(){return [...publicData.reset(),starportHost];}
 function settings(){return el('div',{className:'panel settings-panel'},el('h2',{},'你的浏览器，你的阅读习惯。'),el('p',{},'收藏、已读、主题与时区只保存在当前浏览器，不上传，也不与本地版或其他设备同步。'),el('label',{className:'settings-label'},'显示时区',select('显示时区',personal.timezone,['Asia/Taipei','Asia/Shanghai','UTC','America/New_York','Europe/London'].map(v=>[v,v]),v=>{personal.timezone=v;save();render();})),el('p',{className:'method-note'},'此浏览器也会保存上次成功读取的公开快照，打开时先显示，再后台检查更新。清除浏览器存储会移除快照及阅读状态。首次访问或页面资源未加载时仍需联网。公开页面不需要 API Key。'));}
@@ -133,10 +159,10 @@ function renderHome(section){
  const active=section==='home';homeRoot.hidden=!active;document.body.classList.toggle('home-active',active);
  if(!active){homeController?.dispose();homeController=undefined;return false;}
  document.title='AIHub · 看清 AI 的每一次变化';
- if(!homeController&&!homeLoading)homeLoading=import('./home.js?v=1015cbfdfdf9edac4ceb0b735f9d77b79045a7e83a354b077ade12d815349249').then(module=>{if(route().section==='home')homeController=module.mountHome(homeRoot);}).catch(()=>{homeRoot.querySelector('#home-status').textContent='静态标志 · 入口仍可使用';}).finally(()=>{homeLoading=undefined;});
+ if(!homeController&&!homeLoading)homeLoading=import('./home.js?v=e3cbbca6b16690dff681f8e2f3d01e8204744c4cc8cb18730027c1fab94949f6').then(module=>{if(route().section==='home')homeController=module.mountHome(homeRoot);}).catch(()=>{homeRoot.querySelector('#home-status').textContent='静态标志 · 入口仍可使用';}).finally(()=>{homeLoading=undefined;});
  return true;
 }
-function render(){if(holdHomeRender)return;const {section,id}=route(),localPage=isLocalPage();if(renderHome(section)){constellationModule?.unmountConstellation();starportModule?.unmountStarport();return;}if(!wantsConstellation())constellationModule?.unmountConstellation();if(section!=='forecast'||localPage)starportModule?.unmountStarport();document.querySelector('#navigation').replaceChildren(...Object.entries(sections).map(([key,label])=>el('a',{href:'#/'+key,className:'nav-item '+(key===section?'active':''),'aria-current':key===section?'page':null,onclick:()=>setNavigation(false)},icon(key),label,key==='saved'&&personal.saved.length?el('span',{className:'nav-count'},personal.saved.length):null)));const title=id?'更新详情':sections[section]??'页面不存在';document.title=title+' · Agent Intelligence Hub';document.querySelector('#breadcrumb-current').textContent=title;document.querySelector('#global-search').value=filters().q;
+function render(){if(holdHomeRender)return;const {section,id}=route(),localPage=isLocalPage();if(renderHome(section)){constellationModule?.unmountConstellation();starportModule?.unmountStarport();return;}if(!wantsConstellation())constellationModule?.unmountConstellation();if(section!=='forecast'||localPage)starportModule?.unmountStarport();document.querySelector('#navigation').replaceChildren(...Object.entries(sections).map(([key,label])=>el('a',{href:'#/'+key,className:'nav-item '+(key===section?'active':''),'aria-current':key===section?'page':null,onclick:()=>setNavigation(false)},icon(key),label,key==='saved'&&personal.saved.length?el('span',{className:'nav-count'},personal.saved.length):null)));document.querySelector('#reading-navigation').replaceChildren(...[['dashboard','总览'],['updates','情报'],['models','模型'],['forecast','Reset'],['weekly','周报']].map(([key,label])=>el('a',{href:'#/'+key,'aria-current':key===section?'page':null},label)));const title=id?'更新详情':sections[section]??'页面不存在';document.title=title+' · Agent Intelligence Hub';document.querySelector('#breadcrumb-current').textContent=title;document.querySelector('#global-search').value=filters().q;
   const header=el('div',{className:'page-heading',hidden:!!id&&data?.updates.some(row=>row.id===id)===true},el('div',{},el('h1',{},title),el('p',{},descriptions[section]??'')),el('button',{className:'button refresh-button',onclick:()=>refreshAll()},'检查更新'));
   if(!localPage&&error){constellationModule?.unmountConstellation();starportModule?.unmountStarport();main.replaceChildren(header,el('div',{className:'cache-recovery public-load-status','data-public-load-status':true,role:'status','aria-live':'polite'}),empty('公开快照读取失败',error),el('button',{className:'button','data-public-retry':true,disabled:loading,onclick:()=>load(false)},'重新读取快照'));updateBusy();return;}
   if(!localPage&&!data){constellationModule?.unmountConstellation();starportModule?.unmountStarport();main.replaceChildren(header,el('div',{className:'cache-recovery public-load-status','data-public-load-status':true,role:'status','aria-live':'polite'}),el('div',{className:'skeleton',role:'status','aria-label':'正在读取公开快照'}));updateBusy();return;}
@@ -251,13 +277,20 @@ async function load(quiet=false){
   }
 }
 const mobileNavigation=matchMedia('(max-width:680px)');
-function setNavigation(open){sidebar.classList.toggle('open',open);sidebar.inert=mobileNavigation.matches&&!open;document.querySelector('#nav-backdrop').hidden=!open;document.querySelector('.main').inert=mobileNavigation.matches&&open;document.querySelector('#open-navigation').setAttribute('aria-expanded',String(open));if(open){sidebar.setAttribute('role','dialog');sidebar.setAttribute('aria-modal','true');document.querySelector('#close-navigation').focus();}else{sidebar.removeAttribute('role');sidebar.removeAttribute('aria-modal');if(sidebar.contains(document.activeElement))document.querySelector('#open-navigation').focus();}}
+function setNavigation(open){
+ const wasOpen=sidebar.classList.contains('open');sidebar.classList.toggle('open',open);sidebar.inert=!open;
+ document.querySelector('#nav-backdrop').hidden=!open;document.querySelector('.main').inert=open;
+ document.querySelector('#open-navigation').setAttribute('aria-expanded',String(open));
+ if(open){sidebar.setAttribute('role','dialog');sidebar.setAttribute('aria-modal','true');requestAnimationFrame(()=>{if(sidebar.classList.contains('open'))document.querySelector('#close-navigation').focus();});}
+ else{sidebar.removeAttribute('role');sidebar.removeAttribute('aria-modal');if(wasOpen)document.querySelector('#open-navigation').focus();}
+}
 document.querySelector('.skip-link').addEventListener('click',e=>{e.preventDefault();main.focus();});
 document.querySelector('#search-form').addEventListener('submit',e=>{e.preventDefault();const q=document.querySelector('#global-search').value.trim().slice(0,200);location.hash='#/updates?view=all'+(q?'&q='+encodeURIComponent(q):'')+(wantsConstellation()?'&display=constellation&days='+(filters().days||90):'');render();});
 document.querySelector('#theme-button').addEventListener('click',()=>{personal.theme=personal.theme==='light'?'dark':'light';document.body.classList.toggle('light',personal.theme==='light');save();});
 document.querySelector('#open-navigation').addEventListener('click',()=>setNavigation(true));document.querySelector('#close-navigation').addEventListener('click',()=>setNavigation(false));document.querySelector('#nav-backdrop').addEventListener('click',()=>setNavigation(false));mobileNavigation.addEventListener('change',()=>setNavigation(false));
 async function navigateFromHome(){
  const sequence=++homeNavigationSequence,wasHome=!homeRoot.hidden,isHome=route().section==='home';
+ const destination=location.hash||'#/';readingPositions.delete(renderedAddress);readingPositions.set(renderedAddress,window.scrollY);if(readingPositions.size>60)readingPositions.delete(readingPositions.keys().next().value);
  homeTransition?.skipTransition();
  // On the first visit retain the homepage while reading the same public
  // snapshot that normal navigation already requests. No collection/prefetch.
@@ -267,7 +300,7 @@ async function navigateFromHome(){
   if(sequence!==homeNavigationSequence)return;
  }
  holdHomeRender=false;
- const update=()=>{if(sequence!==homeNavigationSequence)return;setNavigation(false);render();window.scrollTo({top:0,behavior:'instant'});if(wasHome!==isHome){const target=isHome?homeRoot.querySelector('h1'):main;if(target){if(!target.hasAttribute('tabindex'))target.tabIndex=-1;target.focus({preventScroll:true});}}};
+ const update=()=>{if(sequence!==homeNavigationSequence)return;setNavigation(false);render();renderedAddress=destination;window.scrollTo({top:readingPositions.get(destination)??0,behavior:'instant'});if(wasHome!==isHome){const target=isHome?homeRoot.querySelector('h1'):main;if(target){if(!target.hasAttribute('tabindex'))target.tabIndex=-1;target.focus({preventScroll:true});}}};
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  if(wasHome!==isHome&&!reduced&&document.startViewTransition){
   document.documentElement.classList.add('hub-page-transition');
@@ -281,7 +314,7 @@ async function navigateFromHome(){
  if(sequence===homeNavigationSequence&&route().section!=='home'){if(!data&&!loading&&!error)void startPublicSnapshot();void loadLocal();}
 }
 window.addEventListener('hashchange',()=>void navigateFromHome());
-window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();if(route().section==='home'){go('updates');render();}document.querySelector('#global-search').focus();}if(e.key==='Escape')setNavigation(false);if(e.key==='Tab'&&mobileNavigation.matches&&sidebar.classList.contains('open')){const items=[...sidebar.querySelectorAll('a,button')].filter(n=>n.getClientRects().length),first=items[0],last=items.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();if(route().section==='home'){go('updates');render();}document.querySelector('#global-search').focus();}if(e.key==='Escape')setNavigation(false);if(e.key==='Tab'&&sidebar.classList.contains('open')){const items=[...sidebar.querySelectorAll('a,button')].filter(n=>n.getClientRects().length),first=items[0],last=items.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
 setNavigation(false);render();if(route().section!=='home'){void startPublicSnapshot();void loadLocal();}
 
 setInterval(()=>{if(document.visibilityState==="visible")refreshAll(true);},300000);
@@ -305,7 +338,7 @@ async function loadLocal(quiet=true){
     document.querySelector('.local-pill').replaceChildren(el('span',{className:'dot ok'}),'本机静态预览');
     const response=await fetch(new URL('./local-data.json',import.meta.url),{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!response.ok)throw Error();
     const raw=await response.text();if(new TextEncoder().encode(raw).length>8*1024*1024)throw Error();
-    const next=JSON.parse(raw),module=await import('./local-preview.js?v=1015cbfdfdf9edac4ceb0b735f9d77b79045a7e83a354b077ade12d815349249');if(!await module.validPrivateSnapshot(next))throw Error();
+    const next=JSON.parse(raw),module=await import('./local-preview.js?v=e3cbbca6b16690dff681f8e2f3d01e8204744c4cc8cb18730027c1fab94949f6');if(!await module.validPrivateSnapshot(next))throw Error();
     const unchanged=localCache?.contentHash===next.contentHash;localModule=module;localCache=next;localError='';
     if(!quiet)toast(unchanged?'本机缓存没有变化。':'已读取本机模型与 Reset 缓存。');
   }catch{if(localMode)localError=localCache?'本机缓存检查失败，继续显示已读取的数据。':'本机缓存暂不可读，请先完成本地同步。';}

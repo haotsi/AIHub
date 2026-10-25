@@ -7,11 +7,11 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://codex-reset.com/api/forecast https://codex-reset.com/api/timeline; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="color-scheme" content="light dark">
   <title>Agent Intelligence Hub</title>
-  <link rel="stylesheet" href="./styles.css?v=1015cbfdfdf9edac4ceb0b735f9d77b79045a7e83a354b077ade12d815349249">
-  <link rel="stylesheet" href="./starport.css?v=1015cbfdfdf9edac4ceb0b735f9d77b79045a7e83a354b077ade12d815349249">
-  <link rel="stylesheet" href="./constellation.css?v=1015cbfdfdf9edac4ceb0b735f9d77b79045a7e83a354b077ade12d815349249">
-  <link rel="stylesheet" href="./home.css?v=1015cbfdfdf9edac4ceb0b735f9d77b79045a7e83a354b077ade12d815349249">
-  <script type="module" src="./app.js?v=1015cbfdfdf9edac4ceb0b735f9d77b79045a7e83a354b077ade12d815349249"></script>
+  <link rel="stylesheet" href="./styles.css?v=e3cbbca6b16690dff681f8e2f3d01e8204744c4cc8cb18730027c1fab94949f6">
+  <link rel="stylesheet" href="./starport.css?v=e3cbbca6b16690dff681f8e2f3d01e8204744c4cc8cb18730027c1fab94949f6">
+  <link rel="stylesheet" href="./constellation.css?v=e3cbbca6b16690dff681f8e2f3d01e8204744c4cc8cb18730027c1fab94949f6">
+  <link rel="stylesheet" href="./home.css?v=e3cbbca6b16690dff681f8e2f3d01e8204744c4cc8cb18730027c1fab94949f6">
+  <script type="module" src="./app.js?v=e3cbbca6b16690dff681f8e2f3d01e8204744c4cc8cb18730027c1fab94949f6"></script>
 <!-- Browser constellation icon license
 ISC License
 
@@ -172,7 +172,7 @@ SOFTWARE.
   </footer>
 </div></div>
   <a class="skip-link" href="#main">跳到正文</a>
-  <div class="shell">
+  <div class="shell editorial-shell">
     <button id="nav-backdrop" class="nav-backdrop" aria-label="关闭导航遮罩" hidden></button>
     <aside class="sidebar" id="sidebar" aria-label="主导航">
       <a class="brand" href="#/"><strong>AIHub</strong></a>
@@ -180,9 +180,9 @@ SOFTWARE.
       <div class="side-footer"><div class="local-pill"><span class="dot ok"></span>公开静态版</div><button class="button mobile-menu" id="close-navigation">关闭导航</button></div>
     </aside>
     <div class="main">
-      <header class="topbar">
-        <button class="icon-button mobile-menu" aria-label="打开导航" aria-controls="sidebar" id="open-navigation">☰</button>
-        <a class="breadcrumb" href="#/dashboard">工作台<span id="breadcrumb-current">情报总览</span></a>
+      <header class="topbar"><a class="editorial-brand" href="#/">AIHub</a><nav class="editorial-navigation" id="reading-navigation" aria-label="阅读导航"></nav>
+        <button class="icon-button mobile-menu" aria-label="打开全部导航" aria-controls="sidebar" id="open-navigation">☰</button>
+        <span id="breadcrumb-current" hidden>情报总览</span>
         <form class="searchbox" id="search-form" role="search"><span aria-hidden="true">⌕</span><input id="global-search" aria-label="全局搜索" placeholder="搜索更新与关键词" maxlength="200"><kbd>⌘ K</kbd><button class="search-submit" type="submit">搜索</button></form>
         <button class="icon-button" id="theme-button" aria-label="切换主题">◐</button>
       </header>
