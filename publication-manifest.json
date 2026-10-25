@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "artifactHash": "3fb2aceaeb93f5806c122e53c3e43411ee5aa8aa2a73edf6da8f8c4c64de91b1",
+  "artifactHash": "fecf7da362c0c4db916e669e952cedf368b8d6be7b4213a9bd363f22bda196d4",
   "snapshotHash": "764ed8352f175edf4f2b0c5b0528c449e0a092b1e802e297e8aa9b03d501a971",
   "files": [
     {
@@ -30,8 +30,8 @@
     },
     {
       "file": "app.js",
-      "bytes": 55175,
-      "sha256": "6f1f2c84279444bfebabf0ec1daadf354a2ef2e2762688872b639a1ae6277577"
+      "bytes": 62308,
+      "sha256": "aad594b1d6be9b29930675a90f5773d7d66369f22fce66194b7895ffaf43f36d"
     },
     {
       "file": "constellation.css",
@@ -47,6 +47,11 @@
       "file": "data.json",
       "bytes": 598408,
       "sha256": "ffdeb3258dc4c5bbcd3239e2b9476bf9496ebd41289f7a476103509bb1f73d4a"
+    },
+    {
+      "file": "editorial.js",
+      "bytes": 7426,
+      "sha256": "4d299dd184afa040065b45fc63e3dee8f5d2544b2c282129b3fd329362ea2ec1"
     },
     {
       "file": "fonts/manifest.json",
@@ -576,17 +581,17 @@
     {
       "file": "home.js",
       "bytes": 2949,
-      "sha256": "768d434f914392776968082bd5c0d8d8a0e9e42e435c1b88aec0752a82d985ac"
+      "sha256": "cbb5db383a3926a8767b78493572e022663b1c7dd8f02f4cf0c71f443ca5ee54"
     },
     {
       "file": "index.html",
       "bytes": 12489,
-      "sha256": "58862a2b7ec60c6aec840c20c930f23e9daedc0ad07a87a749933eabb342d3b5"
+      "sha256": "c77025040cfaab9fb86c100d4e1e2b085f5ad7dfbcbe308aea84e3e8159e405b"
     },
     {
       "file": "local-preview.js",
       "bytes": 25871,
-      "sha256": "5668989f087fe0450ac239a2096f0bd6b92a73379cb0ff0139410b026e081c0b"
+      "sha256": "89743de33393791e7a5b51bc5928c618a6879dfdfc5a3b3f7ee786bb63a0f09f"
     },
     {
       "file": "model-tools.js",
@@ -610,8 +615,8 @@
     },
     {
       "file": "styles.css",
-      "bytes": 191290,
-      "sha256": "4ec9fa6153faa204a6dc13c16fb9d3ebe2506824932fee565d917940bc5c64d1"
+      "bytes": 196241,
+      "sha256": "f390db1de15fb05d7356b89e911ede63bade6e02636bdda4aae19b9e9fda1344"
     }
   ]
 }
