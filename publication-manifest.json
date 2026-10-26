@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "artifactHash": "f1cea33452c179487b03753cf3c3cb9e4964ca8e4d60256d7758efa18a2a0402",
+  "artifactHash": "4af76836a65e8739f376ec933abd7fa42bbe2fa64025c9d14dc7775689fe555d",
   "snapshotHash": "0ccfe9c61fb2229970a35d968b9781c8a8fc6d8959736984e405cefdadfbe008",
   "files": [
     {
@@ -30,8 +30,8 @@
     },
     {
       "file": "app.js",
-      "bytes": 68309,
-      "sha256": "287b3693b072cf233d822569543ee69c554d5621675b29c35984fb9c43009f13"
+      "bytes": 68437,
+      "sha256": "a831c432787fa95eb1696aae5b3e110f2cd5fade09f94a5b215a9406a9a42379"
     },
     {
       "file": "constellation.css",
@@ -50,8 +50,8 @@
     },
     {
       "file": "editorial.js",
-      "bytes": 21892,
-      "sha256": "0661f855176a0d5a010abd1dbd2dcd9b72fdf0219dc32db14cea0b2b31e624e8"
+      "bytes": 27236,
+      "sha256": "a5dcca28a24f598b36237467817fea2c9beec1854520037c878b69e7ba7ce7a9"
     },
     {
       "file": "fonts/manifest.json",
@@ -581,17 +581,17 @@
     {
       "file": "home.js",
       "bytes": 2949,
-      "sha256": "d5f4eca66d11acfbd94aa35744a33e6319d90e9f59b1f24eefe842491c1c4a84"
+      "sha256": "308c62e87636dc595e01bc9b4ef0dd0d1859a098dbb9880a3d157f51311d5aaf"
     },
     {
       "file": "index.html",
       "bytes": 12489,
-      "sha256": "d8ef0bc449d1101f1a4f25d38b00b91683162c7f9c9d59de901007ae06f779af"
+      "sha256": "9cc3f808a0bccc738b030af6e934490ca0ccf19ea3f16c5bed8e59d1759439f2"
     },
     {
       "file": "local-preview.js",
       "bytes": 26171,
-      "sha256": "805747d539ea5782f33d29e3b843417690ce788776ead275b98bced3250c7f3e"
+      "sha256": "4e496a85d540191831b1834daf89ef21d6601c3a3c20ac9fc95f177b68290241"
     },
     {
       "file": "model-tools.js",
@@ -615,8 +615,8 @@
     },
     {
       "file": "styles.css",
-      "bytes": 201465,
-      "sha256": "853a2f0ada06f6516fddd46b1ade91a38085edb44c0b9e6058745bc374725c52"
+      "bytes": 205516,
+      "sha256": "b8bac5de5ff8fe454019fbf8a3555eaf9db37b7a842b7d456789fc64e07af8ce"
     }
   ]
 }

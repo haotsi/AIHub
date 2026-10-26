@@ -1356,6 +1356,40 @@ body:not(.light) .product-glyph img { filter: invert(1); }
 .health-issue p,.health-issue li { color: var(--muted); }
 .health-issue ul { padding-left: 20px; margin: 8px 0; }
 .health-publication { color: var(--muted); }
+/* Secondary content pages share the editorial shell, without changing controls. */
+.shell.editorial-shell .sources-workspace h2,.shell.editorial-shell .sources-workspace h3,.shell.editorial-shell .models-workspace h2,.shell.editorial-shell .models-workspace h3,.settings-workspace h2 { font-family:var(--font-ui); font-weight:500; letter-spacing:-.3px; }
+.shell.editorial-shell .sources-workspace .source-health-overview { border:0; border-block:1px solid var(--border); border-radius:0; background:none; box-shadow:none; padding:24px 0; margin-bottom:24px; }
+.shell.editorial-shell .sources-workspace .source-health-overview strong { font-size:30px; font-weight:450; letter-spacing:-1px; }
+.shell.editorial-shell .sources-workspace .source-card-grid { gap:0 40px; }
+.shell.editorial-shell .sources-workspace .source-health-card { border:0; border-top:1px solid var(--border); border-radius:0; background:none; box-shadow:none; padding:26px 0; margin:0; min-width:0; }
+.shell.editorial-shell .sources-workspace .source-card-heading h3 { font-size:18px; line-height:1.65; margin:6px 0 0; overflow-wrap:anywhere; }
+.shell.editorial-shell .sources-workspace .eyebrow { font-size:10px; letter-spacing:.2px; color:var(--muted); }
+.shell.editorial-shell .sources-workspace .source-summary-meta { font-size:11px; color:var(--muted); margin:12px 0; line-height:1.9; }
+.shell.editorial-shell .sources-workspace .source-card-actions { margin:18px 0; gap:8px; flex-wrap:wrap; }
+.shell.editorial-shell .sources-workspace .source-diagnostic-details { border-radius:0; background:none; padding:12px 0 0; }
+.shell.editorial-shell .models-workspace .model-overview { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px; border-block:1px solid var(--border); padding:24px 0; margin:28px 0; }
+.shell.editorial-shell .models-workspace .model-stat,.shell.editorial-shell .models-workspace .model-source-card { border:0; border-radius:0; background:none; box-shadow:none; padding:0; min-width:0; }
+.shell.editorial-shell .models-workspace .model-stat>svg { display:none; }
+.shell.editorial-shell .models-workspace .model-stat strong { font-size:30px; font-weight:450; letter-spacing:-1px; }
+.shell.editorial-shell .models-workspace .model-stat small,.shell.editorial-shell .models-workspace .model-source-card small { font-size:11px; line-height:1.8; }
+.shell.editorial-shell .models-workspace .panel,.shell.editorial-shell .models-workspace .table-wrap { border-radius:0; box-shadow:none; background:none; }
+.shell.editorial-shell .models-workspace .ranking-card { border:0; border-top:1px solid var(--border); }
+.shell.editorial-shell .models-workspace .public-aa-charts>.panel { padding:22px 0; border:0; border-top:1px solid var(--border); margin:0; }
+.shell.editorial-shell .models-workspace .public-aa-charts figcaption { margin-bottom:18px; }
+.shell.editorial-shell .models-workspace .public-aa-charts figcaption strong { font-size:18px; font-weight:500; letter-spacing:-.3px; }
+.shell.editorial-shell .models-workspace>.panel { border:0; border-block:1px solid var(--border); padding:20px 0; }
+.shell.editorial-shell .settings-workspace>.panel,.shell.editorial-shell .settings-workspace.panel { border:0; border-top:1px solid var(--border); border-radius:0; box-shadow:none; background:none; padding:26px 0; }
+.settings-workspace { max-width:780px; }
+.settings-workspace h2 { font-size:21px; margin:0 0 14px; }
+.settings-workspace form { margin-top:28px; }
+.settings-workspace .form-grid { gap:24px 32px; }
+@media(max-width:680px){
+ .shell.editorial-shell .sources-workspace .source-card-grid{grid-template-columns:minmax(0,1fr)}
+ .shell.editorial-shell .sources-workspace .source-health-overview{gap:12px;padding:20px 0}
+ .shell.editorial-shell .sources-workspace .source-health-overview strong{font-size:25px}
+ .shell.editorial-shell .models-workspace .model-overview{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 18px}
+ .settings-workspace .form-grid{grid-template-columns:minmax(0,1fr);gap:20px}
+}
 .collection-status { margin:0 0 8px; padding:0; border:0; background:none; font-size:12px; }
 .collection-status summary { color:var(--muted); cursor:pointer; line-height:1.8; }
 .collection-status p { margin:6px 0; color:var(--muted); overflow-wrap:anywhere; }
