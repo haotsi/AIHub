@@ -1356,6 +1356,18 @@ body:not(.light) .product-glyph img { filter: invert(1); }
 .health-issue p,.health-issue li { color: var(--muted); }
 .health-issue ul { padding-left: 20px; margin: 8px 0; }
 .health-publication { color: var(--muted); }
+.collection-status { margin:0 0 8px; padding:0; border:0; background:none; font-size:12px; }
+.collection-status summary { color:var(--muted); cursor:pointer; line-height:1.8; }
+.collection-status p { margin:6px 0; color:var(--muted); overflow-wrap:anywhere; }
+.weekly-reading-route { border:0; border-block:1px solid var(--border); padding:18px 0; margin:18px 0 26px; background:none; }
+.weekly-reading-route > summary { cursor:pointer; font-size:14px; font-weight:550; }
+.weekly-reading-route > p { margin:16px 0; line-height:1.85; }
+.weekly-reading-route small { display:block; margin-top:16px; color:var(--muted); line-height:1.8; }
+.weekly-product-routes { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr)); gap:24px; }
+.weekly-product-routes section { min-width:0; }
+.weekly-product-routes h3 { margin:0 0 8px; font-size:14px; }
+.weekly-product-routes p { color:var(--muted); font-size:13px; line-height:1.85; }
+.weekly-product-routes a { display:block; font-size:13px; margin:10px 0; line-height:1.8; overflow-wrap:anywhere; text-decoration:underline; text-underline-offset:4px; }
 .health-publication a { margin-left: 8px; white-space: nowrap; }
 #public-publication { scroll-margin-top: 90px; }
 .briefing-links { display: flex; flex-wrap: wrap; gap: 16px 28px; padding: 24px 0; color: var(--muted); font-size: 13px; }
