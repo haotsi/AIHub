@@ -1,4 +1,4 @@
-// Shared local model algorithms 46c647ab31dbc2d24846f847157c47b8143a69324320809d0c2b8a4ada73ded6
+// Shared local model algorithms 9c7e90169bca333fe00987bdabdb5c81fe613af7531a0693b44bc8cb1531863b
 const __comparison=(()=>{
 // AA exposes major.minor, not patch or the full measurement configuration.
 function indexVersion(value) {
@@ -320,3 +320,23 @@ function studentCostExampleValues(id) {
 
 return {studentModelCheckedAt,studentModelTasks,studentTaskHint,studentModelMethod,studentCostExamples,studentCostMethod,studentCostLimit,studentPricingLinks,studentCostExampleValues};})();
 export const {studentModelCheckedAt,studentModelTasks,studentTaskHint,studentModelMethod,studentCostExamples,studentCostMethod,studentCostLimit,studentPricingLinks,studentCostExampleValues}=__student_guidance;
+const __metric_reading=(()=>{
+/** Editorial reading aid only; no scores, prices, provider data or new ranking. */
+const modelMetricReading = [
+    { key: 'intelligence', label: '综合能力', use: '初步筛选候选', check: '再用自己的代表任务验证；综合分不保证每个场景都好用。' },
+    { key: 'coding', label: 'Coding', use: '代码修改与调试', check: '结合失败用例和代码审查；模型指数不等于完整编码工具的表现。' },
+    { key: 'agentic', label: 'Agentic', use: '多步骤与工具任务', check: '还要核对工具、权限和任务成功率，分数不能代替完整流程验收。' },
+    { key: 'math', label: '数学', use: '数学题型的参考', check: '核对推导过程与适用题型，不直接当作课程或科研成绩。' },
+    { key: 'speed', label: '输出速度', use: '长输出的生成速度', check: '首段输出后的 Token / 秒；不等于首响应等待或整个任务耗时。' },
+    { key: 'latency', label: '首 Token 延迟', use: '开始回应前的等待', check: '首 Token 可能是推理内容，不代表答案已经开始输出。' },
+    { key: 'cost', label: 'API 价格', use: '按自己的用量估算', check: '核对输入、输出与缓存单价；订阅额度和工具等费用分别计算。' },
+];
+const modelMetricMethod = '本站阅读建议 · 定义以来源方法说明为准；先核对版本与缺失值，再验证自己的任务。本页没有新增评测。';
+const modelMetricSources = [
+    { label: 'AA 方法说明', url: 'https://artificialanalysis.ai/methodology' },
+    { label: 'AA 速度与延迟口径', url: 'https://artificialanalysis.ai/methodology/performance-benchmarking' },
+];
+function modelMetricHint(key) { return modelMetricReading.find(i => i.key === (['inputPrice', 'outputPrice'].includes(key) ? 'cost' : key))?.use ?? null; }
+
+return {modelMetricReading,modelMetricMethod,modelMetricSources,modelMetricHint};})();
+export const {modelMetricReading,modelMetricMethod,modelMetricSources,modelMetricHint}=__metric_reading;

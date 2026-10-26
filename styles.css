@@ -1390,6 +1390,16 @@ body:not(.light) .product-glyph img { filter: invert(1); }
  .shell.editorial-shell .models-workspace .model-overview{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 18px}
  .settings-workspace .form-grid{grid-template-columns:minmax(0,1fr);gap:20px}
 }
+.model-metric-guide { margin:20px 0; }
+.model-metric-guide h3 { font-family:var(--font-ui); font-size:15px; font-weight:500; }
+.model-metric-reading { margin:18px 0; }
+.model-metric-reading>div { display:grid; grid-template-columns:minmax(90px,.6fr) minmax(0,2fr); gap:20px; padding:16px 0; border-bottom:1px solid var(--border); }
+.model-metric-reading dt { font-size:13px; font-weight:500; line-height:1.85; }
+.model-metric-reading dd { margin:0; min-width:0; }
+.model-metric-reading dd strong { font-size:13px; font-weight:500; line-height:1.85; }
+.model-metric-reading dd p { font-size:12px; color:var(--muted); margin:5px 0 0; line-height:1.9; }
+.model-metric-sources { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; }
+@media(max-width:480px){.model-metric-reading>div{grid-template-columns:minmax(0,1fr);gap:5px}}
 .collection-status { margin:0 0 8px; padding:0; border:0; background:none; font-size:12px; }
 .collection-status summary { color:var(--muted); cursor:pointer; line-height:1.8; }
 .collection-status p { margin:6px 0; color:var(--muted); overflow-wrap:anywhere; }
