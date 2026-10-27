@@ -61,6 +61,11 @@
 .hub-home .home-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 72px; padding: 12px 0; flex-shrink: 0; color: var(--muted); }
 .hub-home .home-footer small { font-size: 10px; font-weight: 400; letter-spacing: .02em; }
 .hub-home .home-controls { display: flex; align-items: center; gap: 2px; }
+.hub-home nav.home-reading { align-self: stretch; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; color: var(--text); }
+.hub-home .home-reading a { min-height: 76px; display: flex; gap: 18px; justify-content: flex-start; border-top: 1px solid var(--line); font-size: 13px; letter-spacing: .02em; }
+.hub-home .home-reading-index { color: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums; }
+.hub-home .home-reading-arrow { margin-left: auto; color: var(--muted); transition: transform .2s ease, color .2s ease; }
+.hub-home .home-reading a:hover .home-reading-arrow { transform: translate(2px, -2px); color: var(--text); }
 .hub-home .home-enable { border: 1px solid var(--line); border-radius: 7px; background: transparent; color: var(--text); padding: 8px 14px; min-height: 40px; font-size: 12px; }
 .hub-home .home-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media (max-width: 760px) {
@@ -78,10 +83,13 @@
   .hub-home .visual { min-height: 0; height: clamp(320px, 48svh, 420px); }
   .hub-home .home-footer { min-height: 64px; padding: 10px 0; }
   .hub-home .home-footer small { font-size: 9px; }
+  .hub-home nav.home-reading { gap: 14px; }
+  .hub-home .home-reading a { min-height: 64px; gap: 8px; font-size: 12px; }
+  .hub-home .home-reading-index { display: none; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .hub-home .copy { animation: home-copy-in .65s ease-out both; }
   @keyframes home-copy-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 }
 .hub-home.motion-paused .copy { animation: none; }
-@media (prefers-reduced-motion: reduce) { .hub-home .primary, .hub-home nav a { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .hub-home .primary, .hub-home nav a, .hub-home .home-reading-arrow { transition: none; } }

@@ -7,11 +7,11 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://codex-reset.com/api/forecast https://codex-reset.com/api/timeline; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="color-scheme" content="light dark">
   <title>Agent Intelligence Hub</title>
-  <link rel="stylesheet" href="./styles.css?v=644ac06881285406cd77b4d8ffa69110e1c05ee58377843700121c707678c3c3">
-  <link rel="stylesheet" href="./starport.css?v=644ac06881285406cd77b4d8ffa69110e1c05ee58377843700121c707678c3c3">
-  <link rel="stylesheet" href="./constellation.css?v=644ac06881285406cd77b4d8ffa69110e1c05ee58377843700121c707678c3c3">
-  <link rel="stylesheet" href="./home.css?v=644ac06881285406cd77b4d8ffa69110e1c05ee58377843700121c707678c3c3">
-  <script type="module" src="./app.js?v=644ac06881285406cd77b4d8ffa69110e1c05ee58377843700121c707678c3c3"></script>
+  <link rel="stylesheet" href="./styles.css?v=c6131214dc10f1ea13ef645d083a41a78b0e2389b0e6242f2c502e3311199481">
+  <link rel="stylesheet" href="./starport.css?v=c6131214dc10f1ea13ef645d083a41a78b0e2389b0e6242f2c502e3311199481">
+  <link rel="stylesheet" href="./constellation.css?v=c6131214dc10f1ea13ef645d083a41a78b0e2389b0e6242f2c502e3311199481">
+  <link rel="stylesheet" href="./home.css?v=c6131214dc10f1ea13ef645d083a41a78b0e2389b0e6242f2c502e3311199481">
+  <script type="module" src="./app.js?v=c6131214dc10f1ea13ef645d083a41a78b0e2389b0e6242f2c502e3311199481"></script>
 <!-- Browser constellation icon license
 ISC License
 
@@ -134,7 +134,7 @@ SOFTWARE.
   <header>
     <a class="brand" href="#/" aria-label="AIHub 首页">AIHub</a>
     <nav aria-label="功能入口">
-      <a href="#/updates">情报</a>
+      <a href="#/dashboard">精选</a>
       <a href="#/updates?display=constellation">星图</a>
       <a href="#/models">模型</a>
       <a href="#/forecast">Reset</a>
@@ -149,8 +149,8 @@ SOFTWARE.
       <div class="copy">
         <h1>看清 AI<br>的每一次变化</h1>
         <div class="actions">
-          <a class="primary" href="#/dashboard">进入工作台 <span aria-hidden="true">↗</span></a>
-          <a class="secondary" href="#/updates?display=constellation">探索星图 <span aria-hidden="true">→</span></a>
+          <a class="primary" href="#/dashboard">阅读精选 <span aria-hidden="true">↗</span></a>
+          <a class="secondary" href="#/updates?display=constellation">打开天球仪 <span aria-hidden="true">→</span></a>
         </div>
       </div>
       <div class="visual">
@@ -159,6 +159,11 @@ SOFTWARE.
       </div>
     </section>
   </main>
+  <nav class="home-reading" aria-label="深入阅读">
+    <a href="#/weekly"><span class="home-reading-index" aria-hidden="true">01</span><span>每周回顾</span><span class="home-reading-arrow" aria-hidden="true">↗</span></a>
+    <a href="#/topics"><span class="home-reading-index" aria-hidden="true">02</span><span>产品专题</span><span class="home-reading-arrow" aria-hidden="true">↗</span></a>
+    <a href="#/calendar"><span class="home-reading-index" aria-hidden="true">03</span><span>迁移日历</span><span class="home-reading-arrow" aria-hidden="true">↗</span></a>
+  </nav>
   <footer class="home-footer">
     <small>独立项目 · 非 OpenAI 官方</small>
     <div class="home-controls" role="group" aria-label="模型操作">
