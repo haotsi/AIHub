@@ -28,9 +28,9 @@
 .hub-home button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .hub-home a:focus-visible, .hub-home button:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
 .hub-home .page { max-width: 1480px; min-height: 100svh; margin: auto; padding: 0 clamp(24px, 6.5vw, 96px); display: flex; flex-direction: column; }
-.hub-home header { height: 88px; flex-shrink: 0; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 24px; }
+.hub-home header { min-height: 96px; flex-shrink: 0; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 28px; }
 .hub-home .brand { font-size: 22px; font-weight: 550; letter-spacing: -.045em; line-height: 1; }
-.hub-home nav { justify-self: center; display: flex; align-items: center; gap: 30px; color: var(--muted); font-size: 13px; }
+.hub-home nav { justify-self: center; display: flex; align-items: center; gap: 36px; color: var(--muted); font-size: 13px; letter-spacing: .04em; white-space: nowrap; }
 .hub-home nav a { display: grid; place-items: center; min-height: 44px; transition: color .2s ease; }
 .hub-home nav a:hover { color: var(--text); }
 .hub-home .home-icon { width: 44px; height: 44px; padding: 12px; border: 0; border-radius: 50%; display: grid; place-items: center; background: transparent; color: var(--muted); }
@@ -41,7 +41,7 @@
 .hub-home .home-main { flex: 1; display: flex; min-width: 0; }
 .hub-home .hero { flex: 1; width: 100%; min-height: 560px; display: grid; grid-template-columns: .95fr 1.15fr; gap: 12px; align-items: center; }
 .hub-home .copy { position: relative; z-index: 1; padding: 24px 0 50px; }
-.hub-home h1 { font-family: inherit; font-size: clamp(40px, 4.8vw, 68px); font-weight: 450; letter-spacing: -.045em; line-height: 1.3; white-space: nowrap; margin: 0; color: var(--text); }
+.hub-home h1 { font-family: inherit; font-size: clamp(40px, 4.8vw, 68px); font-weight: 450; letter-spacing: -.012em; line-height: 1.44; white-space: nowrap; margin: 0; color: var(--text); }
 .hub-home .actions { display: flex; align-items: center; gap: 26px; margin-top: 36px; font-size: 13px; }
 .hub-home .primary { display: inline-flex; align-items: center; gap: 28px; padding: 14px 20px; border-radius: 8px; font-weight: 500; color: #18261d; background: #e6ece4; transition: transform .2s ease, background .2s ease; }
 .hub-home .primary:hover { transform: translateY(-2px); background: #f0f5ee; }
@@ -70,13 +70,13 @@
 .hub-home .home-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media (max-width: 760px) {
   .hub-home .page { padding: 0 24px; }
-  .hub-home header { height: 76px; gap: 12px; }
+  .hub-home header { min-height: 84px; gap: 16px; }
   .hub-home .brand { font-size: 20px; }
-  .hub-home nav { gap: 2px; font-size: 12px; }
+  .hub-home nav { gap: 16px; font-size: 12px; }
   .hub-home nav a { min-width: 32px; }
   .hub-home .hero { grid-template-columns: 1fr; gap: 0; min-height: 0; }
   .hub-home .copy { padding: 48px 0 12px; }
-  .hub-home h1 { font-size: clamp(32px, 10.8vw, 48px); letter-spacing: -.04em; }
+  .hub-home h1 { font-size: clamp(32px, 10.8vw, 48px); letter-spacing: -.012em; }
   .hub-home .actions { margin-top: 28px; gap: 22px; font-size: 12px; }
   .hub-home .primary { padding: 13px 18px; gap: 24px; }
   .hub-home .secondary { gap: 10px; }
@@ -86,6 +86,12 @@
   .hub-home nav.home-reading { gap: 14px; }
   .hub-home .home-reading a { min-height: 64px; gap: 8px; font-size: 12px; }
   .hub-home .home-reading-index { display: none; }
+}
+@media (max-width: 480px) {
+  .hub-home header { grid-template-columns: 1fr auto; min-height: 120px; padding: 16px 0 8px; column-gap: 16px; row-gap: 8px; }
+  .hub-home header > nav { grid-column: 1 / -1; grid-row: 2; gap: 24px; font-size: 13px; }
+  .hub-home header > .home-icon { grid-column: 2; grid-row: 1; }
+  .hub-home .copy { padding-top: 36px; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .hub-home .copy { animation: home-copy-in .65s ease-out both; }
