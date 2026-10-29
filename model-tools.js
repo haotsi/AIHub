@@ -1,9 +1,9 @@
-// Shared local model algorithms 9c7e90169bca333fe00987bdabdb5c81fe613af7531a0693b44bc8cb1531863b
+// Shared local model algorithms 96f4e409a33dd61850e07c3b73c3e6b85bb1900b6ad1b05e9fa3acb2a6cd5366
 const __comparison=(()=>{
-// AA exposes major.minor, not patch or the full measurement configuration.
+// AA reports integers for major releases (5) and major.minor for updates (4.3).
 function indexVersion(value) {
-    const match = value?.trim().match(/^v?(\d+)\.(\d+)$/i);
-    return match ? `${Number(match[1])}.${Number(match[2])}` : null;
+    const match = value?.trim().match(/^v?(\d+)(?:\.(\d+))?$/i);
+    return match ? `${Number(match[1])}.${Number(match[2] ?? 0)}` : null;
 }
 function comparisonBasis(models) {
     const versions = new Set(models.map(m => indexVersion(m.benchmarkVersion)));
@@ -340,3 +340,21 @@ function modelMetricHint(key) { return modelMetricReading.find(i => i.key === ([
 
 return {modelMetricReading,modelMetricMethod,modelMetricSources,modelMetricHint};})();
 export const {modelMetricReading,modelMetricMethod,modelMetricSources,modelMetricHint}=__metric_reading;
+const __catalog=(()=>{const {indexVersion}=__comparison;
+function measuredCatalog(models, requestedVersion = '') {
+    const versions = [...new Set(models.map(m => indexVersion(m.benchmarkVersion)).filter((v) => v !== null))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    const version = requestedVersion || versions.at(-1) || null;
+    const rows = models.filter(m => version !== null && indexVersion(m.benchmarkVersion) === version && typeof m.intelligence === 'number' && Number.isFinite(m.intelligence) && m.intelligence >= 0);
+    return { rows, version, total: models.length };
+}
+function hasModelMetric(models, key) {
+    return models.some(m => { const value = m[key]; return typeof value === 'number' && Number.isFinite(value) && value >= 0; });
+}
+function modelCoverage(models) {
+    const metrics = ['intelligence', 'coding', 'agentic', 'math', 'speed', 'inputPrice', 'outputPrice'];
+    const counts = Object.fromEntries(metrics.map(key => [key, models.filter(m => typeof m[key] === 'number' && Number.isFinite(m[key]) && m[key] >= 0).length]));
+    return { total: models.length, version: measuredCatalog(models).version, counts, unavailable: metrics.filter(key => counts[key] === 0) };
+}
+
+return {measuredCatalog,hasModelMetric};})();
+export const {measuredCatalog,hasModelMetric}=__catalog;
