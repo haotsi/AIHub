@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "artifactHash": "433456dcc962f0dffcb842037196c7df74ddf334d2f4b1f9753001ae912ed86d",
+  "artifactHash": "7ad417778b03d874319a18315b2525c3df6c45e3792729799d3584476ab41a68",
   "snapshotHash": "3c194c38d97ba134d7f449c16a6e583ad6351b740b33ec2d644be2efee6e9776",
   "files": [
     {
@@ -11,22 +11,22 @@
     {
       "file": "aa-charts.json",
       "bytes": 649,
-      "sha256": "4b178bb3d2975192d5d86a1def35bae56b78f3e55833bf87b915939179cb0c4a"
+      "sha256": "49088e53d6de014b2aeb0be0e21156932f23eb26f02b25a68cfc0ef5117970a8"
     },
     {
       "file": "aa-cost.png",
-      "bytes": 66174,
-      "sha256": "7d9a4668683c30d5ee1a2592bfc7d77516aa7765adc232bb15f5fdf674803bf8"
+      "bytes": 66163,
+      "sha256": "9844ae341e738a9d377ac5fd2f0e0c866231a48f755f6702ffb4bdf4291ca10e"
     },
     {
       "file": "aa-intelligence.png",
-      "bytes": 64175,
-      "sha256": "34d35cc868d292de3fe7298718313c409670a425388d148d4645e12a32d8d986"
+      "bytes": 64165,
+      "sha256": "84c635eddf66f59990a78f9783571e01919e37633aa81e4ddb1451f0c76bb30a"
     },
     {
       "file": "aa-speed.png",
-      "bytes": 65561,
-      "sha256": "b2a46df20e1e7bce8080c11a33f0a1f494fa93b6094a9b8c30015d03fc457502"
+      "bytes": 65038,
+      "sha256": "eceb3a55b304da136393745caa439ba24be289c05388c3c9b0cd1394ddcf670b"
     },
     {
       "file": "app.js",
