@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artifactHash": "765739a1956ebc00bcd8d80ab4631743a1862362e3730f115df83b19b702135c",
-  "snapshotHash": "bdab33ea5c1f69dfab1891c2c6119ef34ec19a0eb3a690a12089031a4c096391",
+  "artifactHash": "a1a492814e38ee7a7fead5d555efb48708f5e338d6c7769a7ee64f4952c294a2",
+  "snapshotHash": "e1294559fa8fabba358a8e021df92b0a6bb002fd15046bd16fc041a82bf5782c",
   "files": [
     {
       "file": ".nojekyll",
@@ -45,8 +45,8 @@
     },
     {
       "file": "data.json",
-      "bytes": 790455,
-      "sha256": "07f1749bca032d373ee48feac8e08cb249ffd0f96deb6552e25cd3d3f73aa185"
+      "bytes": 854885,
+      "sha256": "8ec6e01a0650f6e501c55e01b2e9d83fb944d9f4e71676e2ab4be86966e3c20f"
     },
     {
       "file": "editorial.js",
