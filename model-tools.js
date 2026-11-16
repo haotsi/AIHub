@@ -1,4 +1,4 @@
-// Shared local model algorithms 789c5a04d5caf064abbb3d9993b62bb89b4af551d62ac6e5ef678e970f535cf0
+// Shared local model algorithms 958733e10050c4818ede5c3531ea176db4b76401be2149641dd80191d3825032
 const __capabilities=(()=>{
 /** Independent AA capability indices: reference values, never inferred scores. */
 const capabilityLabels = {
@@ -343,7 +343,7 @@ const __metric_reading=(()=>{
 const modelMetricReading = [
     { key: 'intelligence', label: '综合能力', use: '初步筛选候选', check: '再用自己的代表任务验证；综合分不保证每个场景都好用。' },
     { key: 'engineering', label: '工程指数参考', use: '工程场景的辅助参考', check: '包含工程知识、推理和执行等能力，独立版本口径；不等于编程分数，未参与综合排名。' },
-    { key: 'speed', label: '输出速度', use: '长输出的生成速度', check: '首段输出后的 Token / 秒；不等于首响应等待或整个任务耗时。' },
+    { key: 'speed', label: '输出速度', use: '长输出的生成速度', check: '新版 v3 按请求全程计算 Token / 秒，包含首 Token 等待；跨工作负载取平均。历史旧口径单独标注，不代表完整工具任务耗时。' },
     { key: 'latency', label: '首 Token 延迟', use: '开始回应前的等待', check: '首 Token 可能是推理内容，不代表答案已经开始输出。' },
     { key: 'cost', label: 'API 价格', use: '按自己的用量估算', check: '核对输入、输出与缓存单价；订阅额度和工具等费用分别计算。' },
 ];
@@ -369,7 +369,7 @@ function hasModelMetric(models, key) {
 function modelCoverage(models) {
     const metrics = ['intelligence', 'engineering', 'strategyOps', 'finance', 'legal', 'healthcare', 'economics', 'coding', 'agentic', 'math', 'speed', 'inputPrice', 'outputPrice'];
     const counts = Object.fromEntries(metrics.map(key => [key, models.filter(m => typeof m[key] === 'number' && Number.isFinite(m[key]) && m[key] >= 0).length]));
-    return { total: models.length, version: measuredCatalog(models).version, counts, unavailable: metrics.filter(key => counts[key] === 0) };
+    return { performanceVersions: { v3: models.filter(m => m.performanceVersion === 'v3').length, legacy: models.filter(m => m.performanceVersion !== 'v3').length }, total: models.length, version: measuredCatalog(models).version, counts, unavailable: metrics.filter(key => counts[key] === 0) };
 }
 
 return {measuredCatalog,hasModelMetric};})();
