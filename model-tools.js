@@ -1,4 +1,4 @@
-// Shared local model algorithms 96f4e409a33dd61850e07c3b73c3e6b85bb1900b6ad1b05e9fa3acb2a6cd5366
+// Shared local model algorithms 20f07045312567a3365c17489df3df1930b76dfdc3c654206487c7708e25e0dd
 const __comparison=(()=>{
 // AA reports integers for major releases (5) and major.minor for updates (4.3).
 function indexVersion(value) {
@@ -351,7 +351,7 @@ function hasModelMetric(models, key) {
     return models.some(m => { const value = m[key]; return typeof value === 'number' && Number.isFinite(value) && value >= 0; });
 }
 function modelCoverage(models) {
-    const metrics = ['intelligence', 'coding', 'agentic', 'math', 'speed', 'inputPrice', 'outputPrice'];
+    const metrics = ['intelligence', 'engineering', 'coding', 'agentic', 'math', 'speed', 'inputPrice', 'outputPrice'];
     const counts = Object.fromEntries(metrics.map(key => [key, models.filter(m => typeof m[key] === 'number' && Number.isFinite(m[key]) && m[key] >= 0).length]));
     return { total: models.length, version: measuredCatalog(models).version, counts, unavailable: metrics.filter(key => counts[key] === 0) };
 }
