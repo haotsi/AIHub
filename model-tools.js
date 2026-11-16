@@ -1,4 +1,21 @@
-// Shared local model algorithms 20f07045312567a3365c17489df3df1930b76dfdc3c654206487c7708e25e0dd
+// Shared local model algorithms 789c5a04d5caf064abbb3d9993b62bb89b4af551d62ac6e5ef678e970f535cf0
+const __capabilities=(()=>{
+/** Independent AA capability indices: reference values, never inferred scores. */
+const capabilityLabels = {
+    engineering: '工程', strategyOps: '战略与运营', finance: '金融与会计',
+    legal: '法律', healthcare: '医疗', economics: '经济',
+};
+const capabilityFields = {
+    engineering: 'artificial_analysis_engineering_index',
+    strategyOps: 'artificial_analysis_strategy_and_ops_index',
+    finance: 'artificial_analysis_finance_and_accounting_index',
+    legal: 'artificial_analysis_legal_index',
+    healthcare: 'artificial_analysis_healthcare_and_medical_index',
+    economics: 'artificial_analysis_economics_index',
+};
+
+return {capabilityLabels};})();
+export const {capabilityLabels}=__capabilities;
 const __comparison=(()=>{
 // AA reports integers for major releases (5) and major.minor for updates (4.3).
 function indexVersion(value) {
@@ -17,13 +34,14 @@ function comparisonBasis(models) {
 }
 const capability = new Set(['intelligence', 'coding', 'agentic']);
 function filterModels(models, options = {}) {
-    const { query = '', creator, version, maxInput, maxOutput, minSpeed, minCoding, sort = 'intelligence', direction = 'desc' } = options;
+    const { query = '', creator, version, maxInput, maxOutput, minSpeed, minCoding, minIntelligence, sort = 'intelligence', direction = 'desc' } = options;
     const valid = (v) => v !== null && Number.isFinite(v);
     const rows = models.filter(m => `${m.name} ${m.creator}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()) &&
         (!creator || m.creator === creator) && (!version || (version === 'unknown' ? !indexVersion(m.benchmarkVersion) : indexVersion(m.benchmarkVersion) === version)) &&
         (maxInput === undefined || (valid(m.inputPrice) && m.inputPrice <= maxInput)) &&
         (maxOutput === undefined || (valid(m.outputPrice) && m.outputPrice <= maxOutput)) &&
         (minSpeed === undefined || (valid(m.speed) && m.speed >= minSpeed)) &&
+        (minIntelligence === undefined || (valid(m.intelligence) && m.intelligence >= minIntelligence)) &&
         (minCoding === undefined || (valid(m.coding) && m.coding >= minCoding)));
     const mixed = !comparisonBasis(rows).compatible;
     return rows.sort((a, b) => {
@@ -300,7 +318,7 @@ const hints = {
     'Blender / 3D 自动化': '适合建模脚本或场景操作试验。先用小场景验证；本站没有专门的3D任务基准。',
 };
 function studentTaskHint(task) { return studentModelTasks.find(s => s.task === task)?.note ?? hints[task] ?? null; }
-const studentModelMethod = '沿用已有任务与权重，使用提示由本站整理。Coding / Agentic 等指数只是参考，不是课程任务、论文质量或实验复现的实测成绩。';
+const studentModelMethod = '沿用已有任务与权重，使用提示由本站整理。综合指数只是参考；AA 已停更 Coding / Agentic 指数，不是课程任务、论文质量或实验复现的实测成绩。';
 const studentCostExamples = [
     { id: 'code-question', label: '代码问答', input: 2000, output: 1000, runs: 1 },
     { id: 'document-trial', label: '文档试跑', input: 6000, output: 1000, runs: 10 },
@@ -324,9 +342,7 @@ const __metric_reading=(()=>{
 /** Editorial reading aid only; no scores, prices, provider data or new ranking. */
 const modelMetricReading = [
     { key: 'intelligence', label: '综合能力', use: '初步筛选候选', check: '再用自己的代表任务验证；综合分不保证每个场景都好用。' },
-    { key: 'coding', label: 'Coding', use: '代码修改与调试', check: '结合失败用例和代码审查；模型指数不等于完整编码工具的表现。' },
-    { key: 'agentic', label: 'Agentic', use: '多步骤与工具任务', check: '还要核对工具、权限和任务成功率，分数不能代替完整流程验收。' },
-    { key: 'math', label: '数学', use: '数学题型的参考', check: '核对推导过程与适用题型，不直接当作课程或科研成绩。' },
+    { key: 'engineering', label: '工程指数参考', use: '工程场景的辅助参考', check: '包含工程知识、推理和执行等能力，独立版本口径；不等于编程分数，未参与综合排名。' },
     { key: 'speed', label: '输出速度', use: '长输出的生成速度', check: '首段输出后的 Token / 秒；不等于首响应等待或整个任务耗时。' },
     { key: 'latency', label: '首 Token 延迟', use: '开始回应前的等待', check: '首 Token 可能是推理内容，不代表答案已经开始输出。' },
     { key: 'cost', label: 'API 价格', use: '按自己的用量估算', check: '核对输入、输出与缓存单价；订阅额度和工具等费用分别计算。' },
@@ -351,7 +367,7 @@ function hasModelMetric(models, key) {
     return models.some(m => { const value = m[key]; return typeof value === 'number' && Number.isFinite(value) && value >= 0; });
 }
 function modelCoverage(models) {
-    const metrics = ['intelligence', 'engineering', 'coding', 'agentic', 'math', 'speed', 'inputPrice', 'outputPrice'];
+    const metrics = ['intelligence', 'engineering', 'strategyOps', 'finance', 'legal', 'healthcare', 'economics', 'coding', 'agentic', 'math', 'speed', 'inputPrice', 'outputPrice'];
     const counts = Object.fromEntries(metrics.map(key => [key, models.filter(m => typeof m[key] === 'number' && Number.isFinite(m[key]) && m[key] >= 0).length]));
     return { total: models.length, version: measuredCatalog(models).version, counts, unavailable: metrics.filter(key => counts[key] === 0) };
 }

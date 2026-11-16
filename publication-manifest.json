@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "artifactHash": "391373fdc12c6c2a7a7a49b448154fa1d2c545c287671fd5f31cc6ee2c6120d7",
+  "artifactHash": "98a16ccc9c5ad40ba02290a75bedba7560f454fec1b7ec2c74efc9e68ae96d0f",
   "snapshotHash": "09d645698c8768c864e9750f04d90a8e22ca112e054191684272bc0ec5bbcc9f",
   "files": [
     {
@@ -11,27 +11,27 @@
     {
       "file": "aa-charts.json",
       "bytes": 649,
-      "sha256": "f26b463d99fbdec1aa9a6d88d3898341705fb0744a7a95c4469083d2c42f2661"
+      "sha256": "b140d75c33dc77bcec53ad75428ee41d7dc97b63620169c902bec2e9ee6cae83"
     },
     {
       "file": "aa-cost.png",
-      "bytes": 69605,
-      "sha256": "5fe4227e8c2ecd8c03fd91b13fadbf9478b6ef18cb0f35853e2e7f12651195a9"
+      "bytes": 69479,
+      "sha256": "641a13b6b4b546603589e1e70a523db8dbcb9a68822c1a422776036c362bc3a7"
     },
     {
       "file": "aa-intelligence.png",
-      "bytes": 63733,
-      "sha256": "b3f40c529075e36e08404d9ed09bb2bcaadbe8e8e6049a2f5c897cf0c4e01d22"
+      "bytes": 63604,
+      "sha256": "35b1fc3537d0fa0aa4944c8ccf70fd0f228e58465dcfe0907782397208087c98"
     },
     {
       "file": "aa-speed.png",
-      "bytes": 62438,
-      "sha256": "c9636f944644a34a2ba2bdf4d6c2443c5fa54074f15f5914ffcf0b18a4001fc4"
+      "bytes": 62313,
+      "sha256": "075c7a3b37a8fd7521d2abb015328d8b487ccede3553b03493c62dc5797edb60"
     },
     {
       "file": "app.js",
       "bytes": 70690,
-      "sha256": "a8a7549140011e8c6027e3f9700560761cae1e4e9b5e3b23de5b2657ba6d4805"
+      "sha256": "a1257f39ef6ca45351aedac962360d3404a7f6433793eb9e8a3046f36b0330d6"
     },
     {
       "file": "constellation.css",
@@ -581,22 +581,22 @@
     {
       "file": "home.js",
       "bytes": 2949,
-      "sha256": "1e6253ca56245576ed49a303d420e78feb28ffbd708dc5fcfd943e9826b6082d"
+      "sha256": "f9c776265108bdd9559711105583717db296b89647520282fcf6c92a1bb658b7"
     },
     {
       "file": "index.html",
       "bytes": 13085,
-      "sha256": "1fb985248b5ec0585c918c240a67c620dd1dcc7ac3796f4e2031cfaec778aeb3"
+      "sha256": "ec76c6a4a8352ac20750e452fe8020c9dcaa4c4da61d093247b83a820fe09d49"
     },
     {
       "file": "local-preview.js",
-      "bytes": 26867,
-      "sha256": "74341e7abefd905195879058de4db04a23f944bd36aa28de5c7ddb631f2f2fbc"
+      "bytes": 27143,
+      "sha256": "7ae8a9f93a0de9e3d6c73eebc477e8d69cd6a9c599635830da925e887cf12b9c"
     },
     {
       "file": "model-tools.js",
-      "bytes": 24879,
-      "sha256": "a192490a1d338b88954c9bba1bc77290e49f3b6eecb11af033a033536c4b85e7"
+      "bytes": 25573,
+      "sha256": "22baf7c47dc9cf76d0be885a76d57ebada571b3bd2aaa7191327acfa03b6be66"
     },
     {
       "file": "public-data.js",
