@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artifactHash": "5d9b59ee40186ecdc82a30388b81519ba66fff004d0c02991d98a33abe40ce41",
-  "snapshotHash": "09d645698c8768c864e9750f04d90a8e22ca112e054191684272bc0ec5bbcc9f",
+  "artifactHash": "f61ca8367eeaa4a289599d6d5d49361e7aaaccfcecd7a1b90f1f716a54461e59",
+  "snapshotHash": "6b171d7a51edbeaeb66a0a8fbffe8edf53bae6f4af45a60017a39b46c20ae8de",
   "files": [
     {
       "file": ".nojekyll",
@@ -11,22 +11,22 @@
     {
       "file": "aa-charts.json",
       "bytes": 649,
-      "sha256": "0bdbdb4c79a334029ab199c13fa1705ae47f3f1f438233d5c9722bbb41be16f4"
+      "sha256": "e0856f07b81536f4855b3d7958c965cfec964dd9344f0e70ec5422519175c0ac"
     },
     {
       "file": "aa-cost.png",
-      "bytes": 69494,
-      "sha256": "a6f0336856a8c11623bbe5f0b1f3b57032e15e763da782c9a9843727b3c51462"
+      "bytes": 69674,
+      "sha256": "861dc65c5eba0dec239c9dd21ff0647072aa5547aa336300d688c839c61df402"
     },
     {
       "file": "aa-intelligence.png",
-      "bytes": 63617,
-      "sha256": "96e7b1460e63d3b5d201c0f29da9ad5dae630fbf7c4d70a128dba04f775a5f79"
+      "bytes": 63799,
+      "sha256": "ddf96c0c165d9d90f47c1101a75589f0aef4c5c7e241f74e570319eea9e8f936"
     },
     {
       "file": "aa-speed.png",
-      "bytes": 63100,
-      "sha256": "0d0730ba541f93f4593bb7dbd644b2603f90d62e1481d981854a76f13b04bdbf"
+      "bytes": 63281,
+      "sha256": "25eecfa414ebe6ecbfbb99b4944d718f84c5592b8307d2c9ad6e70eb148a6ad6"
     },
     {
       "file": "app.js",
@@ -45,8 +45,8 @@
     },
     {
       "file": "data.json",
-      "bytes": 1241871,
-      "sha256": "8a52adead1b6dd053f968afd6a9477ececdda79c019279a817243c691f6a1980"
+      "bytes": 1256774,
+      "sha256": "1edc5b406592aa3069a01fe1719fea9e234bf5541e038b231a7b6d0590954afa"
     },
     {
       "file": "editorial.js",
