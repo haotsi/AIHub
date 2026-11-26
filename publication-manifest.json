@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "artifactHash": "1bececf8518de12de1ea183306e549e6c0cdd455b154195038287a41919533ab",
+  "artifactHash": "9c55c307bd04385dc3fce5cf4cfe6852766d7b4de094f9983fdfb9f502a9daef",
   "snapshotHash": "7f9576eb5ad58909279700cd56c58ba0046336b2c290b04fd8cd7d64ce0268cf",
   "files": [
     {
@@ -11,7 +11,7 @@
     {
       "file": "aa-charts.json",
       "bytes": 649,
-      "sha256": "919c3471eef833f88c9c0f7010f049f367b98eea98e0765bc7ee6603f72b5ff3"
+      "sha256": "d90207568d2f4aeee538fb19760b5c0b673b693dc656ddac812d53bfec54292c"
     },
     {
       "file": "aa-cost.png",
